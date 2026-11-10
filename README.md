@@ -1,52 +1,27 @@
-# 창진에스씨 재무관리 버전 2.0
+# 버전 2.1 적용 안내
 
-프로젝트 URL과 공개 API 키만 `public/config.js`에 입력하는 Supabase + Netlify 프로그램입니다.
+현재 설치된 버전 2.0에는 supabase/UPDATE_2_1.sql 전체를 한 번 실행하세요. 기존 계정·기기·재무자료는 유지됩니다. INSTALL_ALL.sql은 신규 설치 전용입니다.
 
-## 설치 순서
+1. 기존 public/config.js를 별도로 보관합니다.
+2. UPDATE_2_1.sql을 Supabase SQL Editor에서 실행합니다. 관리자 목록의 m 별칭 충돌도 함께 수정합니다.
+3. 새 프로그램 파일로 교체하되 public/config.js에는 기존 프로젝트 URL·공개 키를 유지합니다.
+4. GitHub Desktop에서 Commit·Push하고 Netlify 배포 완료 후 새로고침합니다.
+5. Supabase Authentication 설정에서 Allow new users to sign up을 켭니다. 이메일 확인을 켜 두는 경우 직원이 확인 메일을 받을 수 있게 발송 설정도 확인합니다. 이 설정은 최초 한 번 필요하며 개별 사용자 승인은 프로그램에서 합니다.
 
-1. 동봉한 설치 설명서 PDF를 먼저 읽습니다.
-2. 기존 소스를 보관하고 새 소스로 교체합니다. 옛 Netlify 관리자 함수는 삭제합니다.
-3. Supabase Authentication에서 관리자 이메일 계정을 먼저 생성합니다.
-4. `supabase/INSTALL_ALL.sql` 위쪽 이메일 한 곳을 바꾸고 전체 파일을 한 번 실행합니다.
-5. `public/config.js`의 URL과 Publishable key 또는 anon key를 입력합니다. 비밀키는 넣지 않습니다.
-6. GitHub Desktop에서 Commit과 Push를 하고 Netlify 성공 배포를 확인합니다.
-7. 관리자 로그인 후 기기 등록을 신청합니다.
-8. 최초 기기만 Supabase Table Editor의 `registered_devices`에서 id와 user_id를 대조하고 status를 approved로 저장합니다.
-9. 이후 직원 계정은 Authentication에서 생성하고, 프로그램에서 역할·법인 권한·기기 승인을 설정합니다.
+# 실제 이용 순서
 
-## 기존 배포에서 제거할 파일
+직원: 로그인 화면의 이용 신청 → 성명·부서·이메일·비밀번호 입력 → 필요한 경우 이메일 확인 → 로그인 → 기기 등록 신청 → 기기 식별번호를 관리자에게 전달.
 
-- `netlify/functions/_shared.mjs`
-- `netlify/functions/admin-users.mjs`
-- `netlify/functions/full-backup.mjs`
-- `netlify/functions/restore-backup.mjs`
-- `netlify/functions/runtime-config.mjs`
-- `supabase/migrations/`, `supabase/seed.sql`, `supabase/bootstrap_admin.sql.example`
-- `.env.example`
+관리자: 로그인 → 관리자 설정 → 사용자 승인 대기 → 승인 및 권한 설정 → 역할·법인 권한 지정 → 함께 승인할 기기에서 직원의 식별번호와 일치하는 기기 선택 → 저장.
 
-단순 덮어쓰기만 하면 옛 파일이 남습니다. `.git` 폴더는 유지하고 위 파일의 삭제도 GitHub에 반영하세요.
+직원: 승인 여부 다시 확인을 누르면 이용할 수 있습니다. 기기를 선택하지 않고 사용자만 승인했다면 관리자가 접속 기기 승인에서 별도로 승인해야 합니다.
 
-## 중요한 운영 범위
+기존 계정은 다시 가입하지 않습니다. 기존 승인 관리자 기기는 그대로 사용합니다. 최초 관리자 자체의 생성·최초 기기 복구는 기존 설치 절차를 유지하며, 일반 직원은 Supabase에서 개별 생성·승인할 필요가 없습니다.
 
-- 등록 기기는 계정·사이트 주소·브라우저 프로필 기준입니다. 물리적 PC 고정 인증이 아닙니다.
-- 로그인 화면은 공개됩니다. 재무자료 접근은 로그인·활성 계정·승인 기기·법인 권한을 확인합니다.
-- URL과 API 키는 공개 정보입니다. 비밀번호나 기기 인증값을 코드에 넣지 않습니다.
-- 기기 인증값과 로그인 세션은 브라우저에 저장됩니다. 저장정보가 함께 복제되는 위험을 완전히 방지하는 방식은 아닙니다.
-- 신규 계정과 비밀번호는 Supabase Authentication에서 관리합니다. 프로그램은 업무 권한을 관리합니다.
-- 업무 백업은 Auth 계정·Storage 원본 파일·기기 인증을 포함하지 않습니다.
-- 전체 업무 백업·복원은 관리자만 수행합니다. 복원은 동일 ID 병합 방식이며 백업에 없는 행을 삭제하지 않습니다.
-- 모든 은행 양식을 자동 인식하는 버전은 아닙니다. 기존 은행 헤더 형식이 필요합니다.
-- 기존 자료가 있는 타 프로그램 DB로의 자동 마이그레이션은 제공하지 않습니다.
-- 실행 SQL 전체와 상세 순서는 설치 설명서의 마지막 페이지와 `INSTALL_ALL.sql`을 참조하세요.
+반려된 사용자는 관리자 설정의 사용자 목록에서 수정 버튼을 눌러 재승인할 수 있습니다. 철회된 기기는 별도 재승인이 필요합니다.
 
-## 개발 검증
+# 검증 범위
 
-Node.js 20 이상에서 `npm install`, `npm run ci`, `npm run test:db`를 실행합니다.
-DB 시험은 임시 PGlite PostgreSQL 환경에서 실행되며 실제 Supabase에 접속하지 않습니다.
-실제 서비스 배포·메일 수신·Storage API·CDN·환율·실제 은행파일은 회사 환경에서 인수시험이 필요합니다.
+SQL 최초 설치·기존 버전 업데이트·재실행·관리자 목록 조회·자기 승인 방지·법인 권한·사용자와 선택 기기의 동시 승인·반려와 비활성·기존 상태 보존을 임시 PostgreSQL 환경에서 시험했습니다. 화면은 DOM 기반 기능 시험을 수행했습니다. 실제 회사 Supabase와 Netlify에 직접 배포하지 않았습니다.
 
-## Netlify 설정
-
-루트의 netlify.toml을 사용합니다. 배포 폴더는 `public`, 함수 폴더는 `netlify/functions`입니다.
-별도 Supabase 환경변수나 service_role 키 없이 운영합니다.
-공개 환율 조회 함수만 Netlify에 남겨 두었습니다.
+기존 버전 설명서의 직원 계정 수동 생성 절차 대신 이 안내를 적용하세요. 기존 PDF는 이번 패키지에서 제외하여 혼동을 방지했습니다.

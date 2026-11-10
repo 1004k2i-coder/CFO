@@ -22,6 +22,12 @@ export class FinanceAPI {
     if(this.demo)return {user:{id:this.demoUser.id,email:this.demoUser.email},access_token:'demo'};
     const {data,error}=await this.client.auth.getSession(); if(error)throw error; return data.session;
   }
+  async requestAccess({email,password,full_name,department}){
+    const {data,error}=await this.client.auth.signUp({email,password,options:{emailRedirectTo:location.origin+'/',data:{full_name,department}}});
+    if(error)throw error;return data;
+  }
+  async approveUser(payload){return callFunction(this.runtime,'admin-users',{body:{...payload,action:'approve'}});}
+  async rejectUser(id){return callFunction(this.runtime,'admin-users',{body:{action:'reject',user_id:id}});}
   async signIn(email,password){
     if(this.demo){const user=this.demoData.users.find(u=>u.email===email)||this.demoData.users[0];this.demoUser=user;return {user};}
     const {data,error}=await this.client.auth.signInWithPassword({email,password});if(error)throw error;return data;
