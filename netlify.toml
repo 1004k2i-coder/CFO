@@ -29,3 +29,13 @@
   for = "/service-worker.js"
   [headers.values]
     Cache-Control = "no-cache"
+
+[[headers]]
+  for = "/config.js"
+  [headers.values]
+    Cache-Control = "no-store"
+
+[[headers]]
+  for = "/assets/js/*"
+  [headers.values]
+    Cache-Control = "no-cache"

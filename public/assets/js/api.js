@@ -14,6 +14,10 @@ function demoSave(data){localStorage.setItem(DEMO_KEY,JSON.stringify(data))}
 export class FinanceAPI {
   constructor(runtime){this.runtime=runtime;this.client=runtime.client;this.demo=runtime.mode==='demo';this.demoData=this.demo?demoLoad():null;this.demoUser=this.demo?this.demoData.users[0]:null;}
 
+  async deviceStatus(){const {data,error}=await this.client.rpc('device_status');if(error)throw error;return data;}
+  async registerDevice(label){const {data,error}=await this.client.rpc('register_device',{p_label:label});if(error)throw error;return data;}
+  async listDevices(){const {data,error}=await this.client.rpc('admin_devices');if(error)throw error;return data;}
+  async setDevice(id,status){const {error}=await this.client.rpc('set_device_status',{p_id:id,p_status:status});if(error)throw error;}
   async getSession(){
     if(this.demo)return {user:{id:this.demoUser.id,email:this.demoUser.email},access_token:'demo'};
     const {data,error}=await this.client.auth.getSession(); if(error)throw error; return data.session;

@@ -1,10 +1,10 @@
-import { corsHeaders, response, verifyUser } from './_shared.mjs';
+const response=(statusCode,body)=>({statusCode,headers:{'content-type':'application/json','cache-control':'public, max-age=3600'},body:JSON.stringify(body)});
+const corsHeaders=()=>({});
 
 export async function handler(event) {
   const cors=corsHeaders(event);
   if(event.httpMethod==='OPTIONS')return {statusCode:204,headers:cors,body:''};
   try{
-    await verifyUser(event,{roles:['admin','finance_manager','finance_staff','approver','executive','auditor']});
     const res=await fetch('https://open.er-api.com/v6/latest/USD',{headers:{accept:'application/json'}});
     if(!res.ok)throw new Error(`환율 제공 서버 응답 오류 ${res.status}`);
     const data=await res.json();

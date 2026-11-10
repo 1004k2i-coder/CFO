@@ -14,7 +14,7 @@ test('HTML이 필수 정적 자원을 참조한다',async()=>{
 });
 
 test('Netlify Functions와 Supabase 마이그레이션이 존재한다',async()=>{
-  for(const p of ['netlify/functions/runtime-config.mjs','netlify/functions/admin-users.mjs','netlify/functions/full-backup.mjs','netlify/functions/restore-backup.mjs','netlify/functions/exchange-rates.mjs','supabase/migrations/20261018_001_finance_app.sql']) await access(new URL(p,root));
+  for(const p of ['public/config.js','netlify/functions/exchange-rates.mjs','supabase/INSTALL_ALL.sql']) await access(new URL(p,root));
 });
 
 test('운영 모드는 localStorage가 아닌 Supabase를 사용하고 데모만 localStorage를 사용한다',async()=>{
