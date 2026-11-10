@@ -1,0 +1,20 @@
+-- 최초 관리자 부트스트랩 예시
+-- 1) Supabase Authentication > Users에서 사용자를 먼저 생성합니다.
+-- 2) 아래 UUID를 실제 사용자 UUID로 교체한 후 SQL Editor에서 실행합니다.
+
+begin;
+
+update public.profiles
+set role = 'admin',
+    full_name = '시스템 관리자',
+    active = true,
+    updated_at = now()
+where id = '00000000-0000-0000-0000-000000000000';
+
+insert into public.company_memberships(company_id, user_id, access_level)
+select id, '00000000-0000-0000-0000-000000000000', 'manage'
+from public.companies
+on conflict(company_id, user_id)
+do update set access_level = excluded.access_level;
+
+commit;
