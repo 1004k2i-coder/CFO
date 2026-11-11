@@ -53,3 +53,10 @@ test('일정 저장 API는 알 수 없는 열 없이 중복 무시를 요청한�
  assert.deepEqual(await api.importSchedules(rows),{inserted:4,duplicates:0});assert.equal(saved.table,'schedules');assert.deepEqual(saved.options,{onConflict:'id',ignoreDuplicates:true});assert.equal(saved.rows[0].source_row,undefined);
 });
 test('잔고는 원 단위를 유지하고 세 자리마다 쉼표로 표시한다',()=>{assert.equal(money(123456789),'123,456,789원');assert.equal(money(-1234567),'-1,234,567원');});
+
+test('한글·공백·특수문자 파일명은 영문 저장 경로로 업로드하고 원본은 유지한다',async()=>{
+ const api=Object.create(FinanceAPI.prototype);api.demo=false;const requests=[];
+ api.client={auth:{getUser:async()=>({data:{user:{id:'user'}}})},storage:{from:()=>({upload:async(path,file)=>{requests.push({path,file});return {};}})}};
+ for(const name of ['202601_03경남.xls','농협 내역 (최종).XLS','신한.xlsx','자료 #1.csv']){const file={name};await api.uploadOriginalFile('company',file);assert.equal(requests.at(-1).file,file);assert.match(requests.at(-1).path,/^company\/user\/[a-zA-Z0-9_.-]+$/);assert.equal(file.name,name);}
+ assert.equal(new Set(requests.map(x=>x.path)).size,4);assert.ok(requests[0].path.endsWith('.xls'));
+});

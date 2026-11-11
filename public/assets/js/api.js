@@ -1,3 +1,4 @@
+import {effectiveMonthlyPlans} from './monthly.js';
 import { buildDemoData } from './demo-data.js';
 import { callFunction } from './runtime.js';
 import { chunk, isoDate, uid } from './utils.js';
@@ -111,7 +112,7 @@ export class FinanceAPI {
   async updateImportBatch(id,patch){if(this.demo)return;const {error}=await this.client.from('import_batches').update(patch).eq('id',id);if(error)throw error;}
   async uploadOriginalFile(companyId,file){
     if(this.demo)return `demo/${file.name}`;
-    const {data:{user}}=await this.client.auth.getUser();const safe=file.name.replace(/[^a-zA-Z0-9가-힣._-]/g,'_');const path=`${companyId}/${user.id}/${Date.now()}_${safe}`;
+    const {data:{user}}=await this.client.auth.getUser();const extension=String(file.name||'').match(/\.(xlsx|xls|csv|json)$/i)?.[1].toLowerCase()||'bin';const path=`${companyId}/${user.id}/${Date.now()}_${uid()}.${extension}`;
     const {error}=await this.client.storage.from('finance-files').upload(path,file,{upsert:false,contentType:file.type||'application/octet-stream'});if(error)throw error;return path;
   }
 
@@ -122,7 +123,7 @@ export class FinanceAPI {
   async countOverdue(companyId){const today=isoDate();if(this.demo)return this.demoData.schedules.filter(x=>(companyId==='all'||x.company_id===companyId)&&x.due_date<today&&!['matched','completed','cancelled'].includes(x.status)).length;let q=this.client.from('schedules').select('*',{count:'exact',head:true}).lt('due_date',today).not('status','in','("matched","completed","cancelled")');q=this._companyFilter(q,companyId);const {count,error}=await q;if(error)throw error;return count||0;}
   async saveSchedule(row){
     if(this.demo){const r={...row,id:row.id||uid(),status:row.status||'planned'};const i=this.demoData.schedules.findIndex(x=>x.id===r.id);if(i>=0)this.demoData.schedules[i]=r;else this.demoData.schedules.push(r);demoSave(this.demoData);return r;}
-    const {data:{user}}=await this.client.auth.getUser();const payload={...row,updated_by:user?.id};if(!row.id)payload.created_by=user?.id;const {data,error}=await this.client.from('schedules').upsert(payload).select().single();if(error)throw error;return data;
+    const {data:{user}}=await this.client.auth.getUser();const fields=['id','company_id','direction','due_date','counterparty','description','amount','probability','priority','status','owner_id','recurring_rule','matched_transaction_id','source','memo'];const payload={...Object.fromEntries(fields.filter(k=>Object.hasOwn(row,k)).map(k=>[k,row[k]])),updated_by:user?.id};if(!row.id)payload.created_by=user?.id;const {data,error}=await this.client.from('schedules').upsert(payload).select().single();if(error)throw error;return data;
   }
   async importSchedules(rows){
     if(this.demo){
@@ -148,9 +149,23 @@ export class FinanceAPI {
   }
   async saveProduct(row){if(this.demo){const r={...row,id:row.id||uid(),active:row.active!==false};const i=this.demoData.products.findIndex(x=>x.id===r.id);if(i>=0)this.demoData.products[i]=r;else this.demoData.products.push(r);demoSave(this.demoData);return r;}const {data:{user}}=await this.client.auth.getUser();const payload={...row,updated_by:user?.id};if(!row.id)payload.created_by=user?.id;const {data,error}=await this.client.from('financial_products').upsert(payload).select().single();if(error)throw error;return data;}
 
-  async listMonthlyPlans(companyId,year=new Date().getFullYear()){
+  async listManualMonthlyPlans(companyId,year=new Date().getFullYear()){
     if(this.demo)return this.demoData.monthlyPlans.filter(x=>(companyId==='all'||x.company_id===companyId)&&x.plan_year===year);
     let q=this.client.from('monthly_plans').select('*').eq('plan_year',year).order('plan_month');q=this._companyFilter(q,companyId);const {data,error}=await q;if(error)throw error;return data||[];
+  }
+  async listMonthlySchedules(companyId,year){
+    if(this.demo)return this.listSchedules(companyId,{fromDate:year+'-01-01',toDate:year+'-12-31'});
+    const rows=[];let offset=0;
+    while(true){
+      let q=this.client.from('schedules').select('*').gte('due_date',year+'-01-01').lte('due_date',year+'-12-31').order('id').range(offset,offset+499);
+      q=this._companyFilter(q,companyId);const {data,error}=await q;if(error)throw error;
+      rows.push(...(data||[]));if(!data?.length)break;offset+=data.length;
+    }
+    return rows;
+  }
+  async listMonthlyPlans(companyId,year=new Date().getFullYear()){
+    const [manual,schedules]=await Promise.all([this.listManualMonthlyPlans(companyId,year),this.listMonthlySchedules(companyId,year)]);
+    return effectiveMonthlyPlans(manual,schedules,year);
   }
   async upsertMonthlyPlans(rows){if(this.demo){for(const r of rows){const i=this.demoData.monthlyPlans.findIndex(x=>x.company_id===r.company_id&&x.plan_year===r.plan_year&&x.plan_month===r.plan_month);if(i>=0)this.demoData.monthlyPlans[i]={...this.demoData.monthlyPlans[i],...r};else this.demoData.monthlyPlans.push({...r,id:uid()});}demoSave(this.demoData);return;}const {data:{user}}=await this.client.auth.getUser();const payload=rows.map(r=>({...r,updated_by:user?.id,created_by:r.created_by||user?.id}));const {error}=await this.client.from('monthly_plans').upsert(payload,{onConflict:'company_id,plan_year,plan_month'});if(error)throw error;}
 

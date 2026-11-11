@@ -1,0 +1,7 @@
+[
+  {"version":"2.3.0","date":"2026-11-11","sql_required":false,"changes":["일정 기반 월별 자동집계와 조회 연도 선택","한글 파일명 저장 수정 포함","config.js 제외 업데이트 패키지","화면 버전 표시와 배포 이력 관리"]},
+  {"version":"2.2.1","date":"2026-11-11","sql_required":false,"changes":["한글 파일명 업로드 경로 수정"]},
+  {"version":"2.2.0","date":"2026-11-11","sql_required":false,"changes":["은행별 양식 지원","자금계획서 일정 생성","분류 자동 선택","잔고 쉼표 표시"]},
+  {"version":"2.1.0","date":"2026-11-10","sql_required":true,"changes":["프로그램 내 사용자·기기 승인"]},
+  {"version":"2.0.0","date":"2026-11-10","sql_required":true,"changes":["Supabase 연결·등록 기기 제한·통합 설치 SQL"]}
+]
