@@ -58,7 +58,7 @@ export class FinanceAPI {
   async listCategories(companyId){
     if(this.demo)return this.demoData.categories;
     let q=this.client.from('finance_categories').select('*').eq('active',true).order('sort_order');
-    if(companyId&&companyId!=='all')q=q.or(`company_id.is.null,company_id.eq.${companyId}`);else q=q.is('company_id',null);
+    if(companyId&&companyId!=='all')q=q.or(`company_id.is.null,company_id.eq.${companyId}`);
     const {data,error}=await q;if(error)throw error;return data||[];
   }
   async saveCategory(row){
@@ -123,6 +123,20 @@ export class FinanceAPI {
   async saveSchedule(row){
     if(this.demo){const r={...row,id:row.id||uid(),status:row.status||'planned'};const i=this.demoData.schedules.findIndex(x=>x.id===r.id);if(i>=0)this.demoData.schedules[i]=r;else this.demoData.schedules.push(r);demoSave(this.demoData);return r;}
     const {data:{user}}=await this.client.auth.getUser();const payload={...row,updated_by:user?.id};if(!row.id)payload.created_by=user?.id;const {data,error}=await this.client.from('schedules').upsert(payload).select().single();if(error)throw error;return data;
+  }
+  async importSchedules(rows){
+    if(this.demo){
+      let inserted=0,duplicates=0;
+      for(const row of rows){if(this.demoData.schedules.some(x=>x.id===row.id)){duplicates++;continue;}this.demoData.schedules.push(row);inserted++;}
+      demoSave(this.demoData);return {inserted,duplicates};
+    }
+    const {data:{user}}=await this.client.auth.getUser();let inserted=0,duplicates=0;
+    for(const part of chunk(rows,400)){
+      const payload=part.map(row=>({...row,created_by:user?.id,updated_by:user?.id}));
+      const {data,error}=await this.client.from('schedules').upsert(payload,{onConflict:'id',ignoreDuplicates:true}).select('id');
+      if(error)throw error;inserted+=data?.length||0;duplicates+=part.length-(data?.length||0);
+    }
+    return {inserted,duplicates};
   }
   async deleteSchedule(id){if(this.demo){this.demoData.schedules=this.demoData.schedules.filter(x=>x.id!==id);demoSave(this.demoData);return;}const {error}=await this.client.from('schedules').delete().eq('id',id);if(error)throw error;}
 

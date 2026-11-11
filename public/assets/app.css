@@ -236,3 +236,6 @@ td input,td select{min-width:105px;border:1px solid var(--gray-300);border-radiu
   .sidebar,.topbar,.page-actions,.btn,.filter-bar{display:none!important}
   .main{grid-column:1}.content{padding:0}.panel,.card,.kpi-card,.chart-card{box-shadow:none;break-inside:avoid}
 }
+
+/* 전체 원 단위 금액이 카드 너비를 넘지 않도록 표시합니다. */
+.kpi-money{font-size:clamp(16px,1.5vw,25px);overflow-wrap:anywhere;font-variant-numeric:tabular-nums;}

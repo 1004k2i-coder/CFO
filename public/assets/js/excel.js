@@ -1,10 +1,11 @@
 import { clean, isoDate, loadScript, sha256, toNumber } from './utils.js';
+import { findBankHeader, findPlanTitle, parseBankSheet, parsePlanSheet } from './import-parsers.js';
 
 const LEGACY_ASSET_NAMES={cashAsset:'현금 및 현금성자산',shortFinancial:'단기금융상품',receivables:'매출채권 및 기타채권',inventory:'재고자산',investment:'투자자산',ppe:'유형자산',intangible:'무형자산',otherAsset:'기타자산'};
 
 function sheetRows(workbook, name=workbook.SheetNames[0]) {
   const ws=workbook.Sheets[name];
-  return ws?window.XLSX.utils.sheet_to_json(ws,{header:1,defval:'',raw:false}).filter(r=>r.some(v=>String(v).trim()!=='')):[];
+  return ws?window.XLSX.utils.sheet_to_json(ws,{header:1,defval:'',raw:false,blankrows:true,range:0}):[];
 }
 function normalizedHeaders(row){
   const seen={};
@@ -27,13 +28,6 @@ function excelDate(value){
   if(Number.isFinite(n)&&n>20000&&n<80000){const d=new Date(Math.round((n-25569)*86400*1000));return d.toISOString().slice(0,10)}
   return s;
 }
-function excelDateTime(value){
-  if(!value)return '';
-  if(value instanceof Date)return value.toISOString();
-  const s=String(value).trim().replace(/\./g,'-');
-  const d=new Date(s.includes('T')?s:s.replace(' ','T'));
-  return Number.isNaN(d.getTime())?s:d.toISOString();
-}
 
 async function ensureXlsx(){if(!window.XLSX)await loadScript('https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js','XLSX');return window.XLSX}
 
@@ -47,49 +41,23 @@ export async function parseFinanceFile(file, {categories=[]}={}) {
   }
   await ensureXlsx();
   const buffer=await file.arrayBuffer();
-  const workbook=window.XLSX.read(buffer,{type:'array',cellDates:true});
-  const rows=sheetRows(workbook);
-  if(!rows.length)throw new Error('파일에 읽을 수 있는 데이터가 없습니다.');
-  const first=(rows[0]||[]).map(v=>clean(v).replace(/\s+/g,''));
-  if(first.includes('거래일시')&&first.includes('입금액')&&first.includes('출금액')){
-    return {kind:'bank',fileHash:await sha256(buffer),...await parseBankRows(rows,categories)};
+  const workbook=window.XLSX.read(buffer,{type:'array',cellDates:false});
+  const fileHash=await sha256(buffer),candidates=[];
+  for(const name of workbook.SheetNames){
+    const rows=sheetRows(workbook,name);
+    if(findPlanTitle(rows))candidates.push({kind:'cash_plan',name,rows});
+    else if(findBankHeader(rows))candidates.push({kind:'bank',name,rows});
+    else{
+      const h=rows.findIndex(r=>r.map(clean).includes('자료구분')&&r.map(clean).includes('법인명'));
+      if(h>=0)candidates.push({kind:'legacy',name,rows:rows.slice(h)});
+    }
   }
-  if(first.includes('자료구분')&&first.includes('법인명')){
-    return {kind:'legacy',fileHash:await sha256(buffer),...parseLegacyRows(rows)};
-  }
-  if(String(rows[0]?.[0]||'').includes('조달 및 지출 계획')){
-    return {kind:'cash_plan',fileHash:await sha256(buffer),...parseCashPlanRows(rows)};
-  }
-  // Try every sheet before failing.
-  for(const name of workbook.SheetNames.slice(1)){
-    const other=sheetRows(workbook,name); const h=(other[0]||[]).map(v=>clean(v).replace(/\s+/g,''));
-    if(h.includes('거래일시')&&h.includes('입금액')&&h.includes('출금액'))return {kind:'bank',fileHash:await sha256(buffer),...await parseBankRows(other,categories)};
-    if(h.includes('자료구분')&&h.includes('법인명'))return {kind:'legacy',fileHash:await sha256(buffer),...parseLegacyRows(other)};
-  }
-  throw new Error('지원하는 양식이 아닙니다. 은행 거래내역, 기존 재무 입력양식, 과거 자금계획서만 지원합니다.');
-}
-
-async function parseBankRows(rows,categories){
-  const objects=rowsToObjects(rows);
-  const categorySuggest=text=>{
-    const s=clean(text).toLowerCase();
-    const found=categories.filter(c=>c.active!==false).map(c=>({c,score:(c.keywords||[]).filter(k=>s.includes(String(k).toLowerCase())).length})).sort((a,b)=>b.score-a.score)[0];
-    return found?.score>0?found.c.id:null;
-  };
-  const items=[];
-  for(const r of objects){
-    const transactionAt=excelDateTime(r['거래일시']);
-    if(!transactionAt)continue;
-    const inflow=toNumber(r['입금액']),outflow=toNumber(r['출금액']);
-    const sourceText=[transactionAt,r['적요'],inflow,outflow,r['내용'],r['잔액'],r['거래점명']].join('|');
-    items.push({
-      transaction_at:transactionAt,bank_summary:clean(r['적요']),bank_code:clean(r['입금인코드']),counterparty:clean(r['내용']),
-      inflow,outflow,balance:toNumber(r['잔액']),branch_name:clean(r['거래점명']),depositor_code:clean(r['입금인코드']),
-      memo:clean(r['메모']||r['메모_2']),suggested_category_id:categorySuggest(`${r['적요']} ${r['내용']} ${r['메모']||''}`),
-      classification_status:'unreviewed',source_hash:await sha256(sourceText),raw_data:r,
-    });
-  }
-  return {rows:items,headers:rows[0],preview:items.slice(0,100),summary:{total:items.length,inflow:items.reduce((s,x)=>s+x.inflow,0),outflow:items.reduce((s,x)=>s+x.outflow,0)}};
+  if(!candidates.length)throw new Error('지원하는 머리글을 찾지 못했습니다. 기업·경남·농협·신한 거래내역 또는 과거 자금계획서를 확인하세요.');
+  if(candidates.length>1)throw new Error('가져올 수 있는 시트가 여러 개입니다. 필요한 시트 하나만 별도 파일로 저장해서 올려주세요.');
+  const {kind,name,rows}=candidates[0];
+  if(kind==='bank')return {kind,fileHash,...await parseBankSheet(rows,{categories,sheetName:name,date1904:!!workbook.Workbook?.WBProps?.date1904})};
+  if(kind==='cash_plan')return {kind,fileHash,...parsePlanSheet(rows,{sheetName:name})};
+  return {kind,fileHash,...parseLegacyRows(rows)};
 }
 
 function parseLegacyRows(rows){
@@ -120,23 +88,6 @@ function parseLegacyJson(state){
   (state.shortInvestments||[]).forEach(x=>result.products.push({company_name:clean(names[toNumber(x.corpIndex)]||''),product_type:'deposit',bank_name:clean(x.bank),product_name:clean(x.productName)||clean(x.productType)||'단기투자',currency:'KRW',principal:toNumber(x.principal),current_value:toNumber(x.currentValue)||toNumber(x.principal),exchange_rate:0,interest_rate:toNumber(x.rate),start_date:excelDate(x.startDate),maturity_date:excelDate(x.maturityDate),redeemable:String(x.redeemable).includes('가능'),pledged:String(x.pledged).includes('있음'),memo:clean(x.memo)}));
   (state.fxDeposits||[]).forEach(x=>result.products.push({company_name:clean(names[toNumber(x.corpIndex)]||''),product_type:'fx_deposit',bank_name:clean(x.bank),product_name:clean(x.depositType)||'외화예금',currency:clean(x.currency)||'USD',principal:toNumber(x.foreignAmount),current_value:toNumber(x.foreignAmount),exchange_rate:toNumber(x.manualRate),interest_rate:0,start_date:'',maturity_date:excelDate(x.maturityDate),redeemable:true,pledged:false,memo:clean(x.memo)}));
   return {rows:result,preview:[...result.cash,...result.monthly,...result.schedules,...result.products].slice(0,100),summary:Object.fromEntries(Object.entries(result).map(([k,v])=>[k,v.length]))};
-}
-
-function parseCashPlanRows(rows){
-  const title=String(rows[0]?.[0]||''); const m=title.match(/(20\d{2})년\s*(\d{1,2})월/);
-  if(!m)throw new Error('자금계획서 제목에서 연도와 월을 찾을 수 없습니다.');
-  const year=Number(m[1]),month=Number(m[2]); let day=1; const schedules=[];
-  for(let i=3;i<rows.length;i++){
-    const r=rows[i]||[]; const dayValue=String(r[0]??'').trim();
-    if(/^\d{1,2}$/.test(dayValue))day=Math.max(1,Math.min(31,Number(dayValue)));
-    const due=`${year}-${String(month).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
-    const incomeDesc=clean(r[1]),income=toNumber(r[2]);
-    const expenseDesc=clean(r[4]),expense=toNumber(r[5]);
-    const category=clean(r[6]),note=clean(r[7]);
-    if(incomeDesc||income>0)schedules.push({due_date:due,direction:'receipt',counterparty:incomeDesc,description:incomeDesc,amount:income,probability:100,priority:'normal',memo:[category,note].filter(Boolean).join(' / '),source_row:i+1});
-    if(expenseDesc||expense>0)schedules.push({due_date:due,direction:'payment',counterparty:expenseDesc,description:expenseDesc,amount:expense,probability:100,priority:'normal',memo:[category,note].filter(Boolean).join(' / '),source_row:i+1});
-  }
-  return {rows:schedules,preview:schedules.slice(0,100),summary:{total:schedules.length,receipt:schedules.filter(x=>x.direction==='receipt').reduce((s,x)=>s+x.amount,0),payment:schedules.filter(x=>x.direction==='payment').reduce((s,x)=>s+x.amount,0),year,month}};
 }
 
 export async function exportWorkbook(name,sheets){
