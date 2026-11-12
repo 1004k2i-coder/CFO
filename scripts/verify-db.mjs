@@ -118,5 +118,38 @@ assert.equal((await q('select approval_status from profiles where id=$1',[applic
 assert.equal((await q('select status from registered_devices where id=$1',[requested]))[0].status,'revoked');
 console.log('업데이트 SQL 재실행 시 반려·철회·업무자료 보존 통과');
 
+await db.exec('reset role');await db.exec(fs.readFileSync(new URL('../supabase/UPDATE_2_4.sql',import.meta.url),'utf8'));await login(admin,token);
+const company=companies[0].id,otherCompany=companies[1].id;
+const account=async(name,c=company)=>(await q("insert into cash_accounts(company_id,bank_name,account_name,current_balance,currency) values($1,'은행',$2,500,'KRW') returning id",[c,name]))[0].id;
+const aa=await account('원천'),bb=await account('상대'),cc=await account('타법인',otherCompany);
+const tx=async(acc,inc,out,c=company)=>(await q("insert into bank_transactions(company_id,account_id,transaction_at,inflow,outflow,balance,source_hash) values($1,$2,'2026-01-10T10:00:00+09:00',$3,$4,500,gen_random_uuid()::text) returning id",[c,acc,inc,out]))[0].id;
+const t1=await tx(aa,0,100),t2=await tx(bb,100,0),bad=await tx(bb,101,0);
+const link=async(t,a=null,p=null,cp=null)=>(await q('select link_internal_transfer($1,$2,$3,$4) as id',[t,a,p,cp]))[0].id;
+await fails(()=>link(t1,bb,null,bad),'금액이 다른 거래 대조 차단');await fails(()=>link(t1,cc),'다른 법인 상대계좌 차단');
+const l1=await link(t1,bb);assert.equal((await q('select status from internal_transfers where id=$1',[l1]))[0].status,'pending');
+const l2=await link(t1,bb,null,t2);assert.equal((await q('select status from internal_transfers where id=$1',[l2]))[0].status,'matched');assert.equal(await link(t1,bb,null,t2),l2);
+assert.equal((await q('select sum(current_balance)::numeric as total from cash_accounts where id=any($1::uuid[])',[[aa,bb]]))[0].total,'1000.00');
+assert.equal((await q("select count(*)::int n from bank_transactions where id=any($1::uuid[]) and classification_status='reviewed'",[[t1,t2]]))[0].n,2);
+await fails(()=>link(t2,aa,null,t1),'역방향 중복 대조 차단');await fails(()=>q('update bank_transactions set outflow=200 where id=$1',[t1]),'연결 거래 금액 수정 차단');
+await q('select unlink_internal_transfer($1)',[l2]);assert.equal((await q('select classification_status from bank_transactions where id=$1',[t1]))[0].classification_status,'unreviewed');
+console.log('은행 양쪽 대조·재실행·잔액 미중복·연결 해제 검증 통과');
+const product=(await q("insert into financial_products(company_id,product_type,product_name,current_value,balance_as_of,maturity_date) values($1,'mmt','시험MMT',1000,'2025-12-31T23:59:59+09:00',null) returning id",[company]))[0].id;
+const withdrawal=await tx(aa,100,0),l3=await link(withdrawal,null,product);assert.equal((await q('select adjustment from product_transfer_totals() where product_id=$1',[product]))[0].adjustment,'-100.00');assert.equal(await link(withdrawal,null,product),l3);
+const deposit=await tx(aa,0,40);await link(deposit,null,product);assert.equal((await q('select adjustment from product_transfer_totals() where product_id=$1',[product]))[0].adjustment,'-60.00');
+await q('select unlink_internal_transfer($1)',[l3]);assert.equal((await q('select adjustment from product_transfer_totals() where product_id=$1',[product]))[0].adjustment,'40.00');
+const tooLarge=await tx(aa,9999,0);await fails(()=>link(tooLarge,null,product),'상품 잔액 음수 차단');
+console.log('MMT 기준잔액·입출금 증감·중복·해제·음수 방지 통과');
+const category=(await q("select id from finance_categories where direction='payment' limit 1"))[0].id;
+const normal=await tx(aa,0,30);await q('select review_transactions($1,true)',[[{id:normal,category_id:category}]]);assert.equal((await q('select classification_status from bank_transactions where id=$1',[normal]))[0].classification_status,'reviewed');await q('select review_transactions($1,false)',[[{id:normal,category_id:category}]]);assert.equal((await q('select classification_status from bank_transactions where id=$1',[normal]))[0].classification_status,'unreviewed');
+await fails(()=>q('select review_transactions($1,true)',[[{id:normal,category_id:category},{id:bad,category_id:null}]]),'일괄 확인 중 오류 발생 시 전체 롤백');assert.equal((await q('select classification_status from bank_transactions where id=$1',[normal]))[0].classification_status,'unreviewed');
+const sch=async()=>(await q("insert into schedules(company_id,direction,due_date,amount,created_by) values($1,'payment','2026-01-11',10,$2) returning id",[company,admin]))[0].id;
+const s1=await sch(),s2=await sch();await q('select delete_schedules_batch($1)',[[s1,s2]]);assert.equal((await q('select count(*)::int n from schedules where id=any($1)',[[s1,s2]]))[0].n,0);
+const s3=await sch(),s4=await sch();await q('update bank_transactions set matched_schedule_id=$1 where id=$2',[s4,normal]);await fails(()=>q('select delete_schedules_batch($1)',[[s3,s4]]),'연결 일정 포함 시 일괄 삭제 전체 롤백');assert.equal((await q('select count(*)::int n from schedules where id=any($1)',[[s3,s4]]))[0].n,2);
+const fx=(await q("insert into financial_products(company_id,product_type,product_name,currency,current_value,exchange_rate) values($1,'fx_deposit','바트','THB',100,1) returning id",[company]))[0].id;
+await q("select apply_exchange_rates($1,$2,now(),now())",[company,{THB:40}]);assert.equal((await q('select exchange_rate from financial_products where id=$1',[fx]))[0].exchange_rate,'40.000000');await fails(()=>q("select apply_exchange_rates($1,$2,now(),now())",[company,{THB:0}]),'실패 환율 적용 전체 롤백');assert.equal((await q('select exchange_rate from financial_products where id=$1',[fx]))[0].exchange_rate,'40.000000');
+const backup24=(await q('select export_finance_backup() as b'))[0].b;assert.ok(backup24.data.internal_transfers.length>0);await q('select restore_finance_backup($1)',[backup24]);
+await login(staff,other);await fails(()=>q('delete from internal_transfers'),'내부이체 직접 삭제 차단');await login(admin,'z'.repeat(64));await fails(()=>q('select delete_schedules_batch($1)',[[s3]]),'미승인 기기 일괄삭제 차단');
+console.log('일괄 확인·분류 변경·선택 삭제·환율·신규 연결 백업복원·권한 검증 통과');
+
 await db.close();
 console.log('데이터베이스 검증 완료');

@@ -1,7 +1,7 @@
 import { addDays, isoDate, toNumber } from './utils.js';
 
 export function productKrwValue(product={}) {
-  const amount=toNumber(product.current_value)||toNumber(product.principal);
+  const amount=product.current_value==null?toNumber(product.principal):toNumber(product.current_value);
   const currency=String(product.currency||'KRW').toUpperCase();
   return currency==='KRW' ? amount : amount*toNumber(product.exchange_rate);
 }

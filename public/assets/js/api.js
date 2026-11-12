@@ -145,9 +145,29 @@ export class FinanceAPI {
 
   async listProducts(companyId){
     if(this.demo)return this.demoData.products.filter(x=>companyId==='all'||x.company_id===companyId);
-    let q=this.client.from('financial_products').select('*').eq('active',true).order('maturity_date');q=this._companyFilter(q,companyId);const {data,error}=await q;if(error)throw error;return data||[];
+    let q=this.client.from('financial_products').select('*').eq('active',true).order('maturity_date');q=this._companyFilter(q,companyId);const {data,error}=await q;if(error)throw error;const {data:adjustments,error:adjustmentError}=await this.client.rpc('product_transfer_totals');if(adjustmentError)throw new Error('내부이체 업데이트 SQL을 먼저 실행하세요: '+adjustmentError.message);const totals=new Map((adjustments||[]).map(x=>[x.product_id,Number(x.adjustment)]));return (data||[]).map(x=>({...x,base_current_value:Number(x.current_value),transfer_adjustment:totals.get(x.id)||0,current_value:Number(x.current_value)+(totals.get(x.id)||0)}));
   }
-  async saveProduct(row){if(this.demo){const r={...row,id:row.id||uid(),active:row.active!==false};const i=this.demoData.products.findIndex(x=>x.id===r.id);if(i>=0)this.demoData.products[i]=r;else this.demoData.products.push(r);demoSave(this.demoData);return r;}const {data:{user}}=await this.client.auth.getUser();const payload={...row,updated_by:user?.id};if(!row.id)payload.created_by=user?.id;const {data,error}=await this.client.from('financial_products').upsert(payload).select().single();if(error)throw error;return data;}
+  async saveProduct(row){
+    const fields=['id','company_id','product_type','bank_name','product_name','currency','principal','current_value','exchange_rate','interest_rate','start_date','maturity_date','available_date','redeemable','pledged','conditions','memo','active','balance_as_of','exchange_rate_at','exchange_rate_fetched_at'];
+    const payload=Object.fromEntries(fields.filter(k=>Object.hasOwn(row,k)).map(k=>[k,row[k]]));
+    if(Object.hasOwn(row,'base_current_value'))payload.current_value=row.base_current_value;
+    for(const key of ['start_date','maturity_date','available_date','balance_as_of'])if(payload[key]==='')payload[key]=null;
+    if(payload.currency)payload.currency=payload.currency.trim().toUpperCase();
+    if(this.demo){const r={...payload,id:row.id||uid()};const i=this.demoData.products.findIndex(x=>x.id===r.id);if(i>=0)this.demoData.products[i]={...this.demoData.products[i],...r};else this.demoData.products.push(r);demoSave(this.demoData);return r;}
+    const {data:{user}}=await this.client.auth.getUser();payload.updated_by=user?.id;if(!row.id)payload.created_by=user?.id;
+    const {data,error}=await this.client.from('financial_products').upsert(payload).select().single();if(error)throw error;return data;
+  }
+
+
+  async rpc(name,args){const {data,error}=await this.client.rpc(name,args);if(error)throw error;return data;}
+  async listTransfers(companyId){let q=this.client.from('internal_transfers').select('*').order('created_at',{ascending:false});q=this._companyFilter(q,companyId);const rows=[];let offset=0;while(true){let page=this.client.from('internal_transfers').select('*').order('id').range(offset,offset+499);page=this._companyFilter(page,companyId);const {data,error}=await page;if(error)throw error;rows.push(...(data||[]));if(!data?.length)break;offset+=data.length;}return rows;}
+  async listAllTransactions(companyId,{fromDate,toDate}={}){const rows=[];let offset=0;while(true){let q=this.client.from('bank_transactions').select('*').order('transaction_at',{ascending:false}).order('id').range(offset,offset+499);q=this._companyFilter(q,companyId);if(fromDate)q=q.gte('transaction_at',fromDate+'T00:00:00+09:00');if(toDate)q=q.lte('transaction_at',toDate+'T23:59:59.999+09:00');const {data,error}=await q;if(error)throw error;rows.push(...(data||[]));if(!data?.length)break;offset+=data.length;}return rows;}
+  async reviewTransactions(rows,confirm=true){return this.rpc('review_transactions',{p_rows:rows,p_confirm:confirm});}
+  async linkTransfer(args){return this.rpc('link_internal_transfer',args);}
+  async unlinkTransfer(id){return this.rpc('unlink_internal_transfer',{p_id:id});}
+  async deleteSchedules(ids){return this.rpc('delete_schedules_batch',{p_ids:ids});}
+  async archiveProduct(id){if(this.demo)return this.saveProduct({id,active:false});const {data:{user}}=await this.client.auth.getUser();const {data,error}=await this.client.from('financial_products').update({active:false,updated_by:user?.id}).eq('id',id).select('id').single();if(error)throw error;return data;}
+  async applyRates(companyId,fx){return this.rpc('apply_exchange_rates',{p_company:companyId==='all'?null:companyId,p_rates:fx.rates,p_rate_at:fx.updated_at,p_fetched_at:fx.fetched_at});}
 
   async listManualMonthlyPlans(companyId,year=new Date().getFullYear()){
     if(this.demo)return this.demoData.monthlyPlans.filter(x=>(companyId==='all'||x.company_id===companyId)&&x.plan_year===year);

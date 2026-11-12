@@ -1,7 +1,60 @@
 [
-  {"version":"2.3.0","date":"2026-11-11","sql_required":false,"changes":["일정 기반 월별 자동집계와 조회 연도 선택","한글 파일명 저장 수정 포함","config.js 제외 업데이트 패키지","화면 버전 표시와 배포 이력 관리"]},
-  {"version":"2.2.1","date":"2026-11-11","sql_required":false,"changes":["한글 파일명 업로드 경로 수정"]},
-  {"version":"2.2.0","date":"2026-11-11","sql_required":false,"changes":["은행별 양식 지원","자금계획서 일정 생성","분류 자동 선택","잔고 쉼표 표시"]},
-  {"version":"2.1.0","date":"2026-11-10","sql_required":true,"changes":["프로그램 내 사용자·기기 승인"]},
-  {"version":"2.0.0","date":"2026-11-10","sql_required":true,"changes":["Supabase 연결·등록 기기 제한·통합 설치 SQL"]}
+  {
+    "version": "2.4.0",
+    "date": "2026-11-12",
+    "sql_required": true,
+    "changes": [
+      "조회할 때 최신 제공 환율 적용·USD JPY THB 지원",
+      "만기 없는 상품·기준잔액 및 내부이체 자동 반영",
+      "은행 양쪽 거래 대조·중복 방지·상품 삭제 처리",
+      "분류 일괄 변경·확인완료·일정 선택 삭제",
+      "확인완료 지출 분석·계획 비교·미대조 점검"
+    ]
+  },
+  {
+    "version": "2.3.0",
+    "date": "2026-11-11",
+    "sql_required": false,
+    "changes": [
+      "일정 기반 월별 자동집계와 조회 연도 선택",
+      "한글 파일명 저장 수정 포함",
+      "config.js 제외 업데이트 패키지",
+      "화면 버전 표시와 배포 이력 관리"
+    ]
+  },
+  {
+    "version": "2.2.1",
+    "date": "2026-11-11",
+    "sql_required": false,
+    "changes": [
+      "한글 파일명 업로드 경로 수정"
+    ]
+  },
+  {
+    "version": "2.2.0",
+    "date": "2026-11-11",
+    "sql_required": false,
+    "changes": [
+      "은행별 양식 지원",
+      "자금계획서 일정 생성",
+      "분류 자동 선택",
+      "잔고 쉼표 표시"
+    ]
+  },
+  {
+    "version": "2.1.0",
+    "date": "2026-11-10",
+    "sql_required": true,
+    "changes": [
+      "프로그램 내 사용자·기기 승인"
+    ]
+  },
+  {
+    "version": "2.0.0",
+    "date": "2026-11-10",
+    "sql_required": true,
+    "changes": [
+      "Supabase 연결·등록 기기 제한·통합 설치 SQL"
+    ]
+  }
 ]

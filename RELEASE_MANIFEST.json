@@ -1,9 +1,9 @@
 {
-  "version": "2.3.0",
-  "previous_version": "2.2.1",
+  "version": "2.4.0",
+  "previous_version": "2.3.0",
   "package_type": "update",
   "config_included": false,
-  "sql_required": false,
+  "sql_required": true,
   "files": [
     {
       "path": ".github/workflows/ci.yml",
@@ -15,7 +15,7 @@
     },
     {
       "path": "CHANGELOG.md",
-      "sha256": "5a1c5de15af347f9fa09bf45ed1c8db76be75f357336c58ec0293118b4017549"
+      "sha256": "565dcb2a1210081edd984966824b5f1c661ef6bd8edc9570f57528adce2ba658"
     },
     {
       "path": "HOTFIX_2_2_1.md",
@@ -23,15 +23,15 @@
     },
     {
       "path": "README.md",
-      "sha256": "4267e40bfa9a50a3e84e57478aa0c7e9c906374169760349c7c2b2f348b78a6b"
+      "sha256": "1dda3ee15bd6681fa77c32b3f91a51cf53299b62c74305c093f49384323496db"
     },
     {
       "path": "RELEASE_HISTORY.json",
-      "sha256": "2a2c59c6213e0d65e41b555c824f7af55c9318856b96d099d3f47e4e3f7d6fc8"
+      "sha256": "26bf309f2d98987a72b07b26de0c5acbb9a3a217edc1e1605b2513a4ab366440"
     },
     {
       "path": "UPDATE_GUIDE.md",
-      "sha256": "efd0f16923686bdca3628a68b5e09441649af92c3060128250f0da5f8e735a80"
+      "sha256": "bdb61b810112fa64b2eabba8d5b5d58d0363a9e277a5df70f79eef95c06ccfd9"
     },
     {
       "path": "docs/APPROVAL_V21.md",
@@ -51,7 +51,7 @@
     },
     {
       "path": "netlify/functions/exchange-rates.mjs",
-      "sha256": "4c357376f89facae39ddba6448750920f9d9a9b27b1dd296150f422d852d07ed"
+      "sha256": "3d2e01179de0dc9ea2ac6e9ac6a9d8ff537dc89b0d1abd12c51fe257c2975d2a"
     },
     {
       "path": "netlify.toml",
@@ -59,23 +59,31 @@
     },
     {
       "path": "package-lock.json",
-      "sha256": "5597d03cec283bd019a176eff58dd6d93fb6dfe06e060a6afbeacb744ca46e28"
+      "sha256": "d0dc022d80e1e9b248d7f0afab6ec72f58745892c2f0540559b9990f40d73876"
     },
     {
       "path": "package.json",
-      "sha256": "b7385f059cd1e5b30272c67107ee9432fd5cf40a01c38c71f5a846e18aca4e49"
+      "sha256": "717de241541c7b77aa4cab9341c668aabdb22c4735f3b56df403b4da2cb583e9"
     },
     {
       "path": "public/assets/app.css",
       "sha256": "538306243428f2624983035f6928bbe3d6b5b0fa251117e19f1f5102d3bcf4db"
     },
     {
+      "path": "public/assets/js/actuals.js",
+      "sha256": "4ec191d2dbed635885e6914210b6c17766f26f75805af6ddfa5e3893f964756b"
+    },
+    {
       "path": "public/assets/js/api.js",
-      "sha256": "348596257057ae1c7cf741d98ecf0dbf324b0af0a0cfaf6fda467ff8e29c5902"
+      "sha256": "b988612d32b6e67c0fdcedc2c0a0f08fe5be21047257b56084cab3576a2ece44"
     },
     {
       "path": "public/assets/js/app.js",
-      "sha256": "f12e5a0f0e596a9026668d561d5a452b5eee12b921724241a23d9e6cf646e8dd"
+      "sha256": "a99550296f1bab9dd80c95a9e0536b6d6d9f92297348308d48d0fa8aaabc373e"
+    },
+    {
+      "path": "public/assets/js/cfo-panel.js",
+      "sha256": "f512311b111fe51aa903599c8d39a4e21fc4328ec1ddce6b4403194585158ad8"
     },
     {
       "path": "public/assets/js/charts.js",
@@ -95,7 +103,7 @@
     },
     {
       "path": "public/assets/js/finance.js",
-      "sha256": "6c4c77281034c28525627be1fe3617a74a8239958293fadcd248945d7d013249"
+      "sha256": "35dcf9c4beb244bf2661bf3d9afe0133d5003d1d583aa629ab9f41ca49428b93"
     },
     {
       "path": "public/assets/js/import-parsers.js",
@@ -110,12 +118,16 @@
       "sha256": "31b1d2ed5344ca5a771f9e027efaf9bdbc3c78008163c47912e806fa07a524ff"
     },
     {
+      "path": "public/assets/js/transaction-panel.js",
+      "sha256": "c0625206ebcd330b109c9899620003aae09eed63adf8e0ee6418c5bc23cfc322"
+    },
+    {
       "path": "public/assets/js/utils.js",
       "sha256": "b2668e30d2021739e6f16eb3c6f6c0d1cffcab18c9bb47b2f31a18509cb5386a"
     },
     {
       "path": "public/assets/js/version.js",
-      "sha256": "46a0a6f3409b9fda52f0c706821a4132d903d206378d33050563da60784117ca"
+      "sha256": "3782238e724bbc9ca00fad2e2233e0a12b971b4974250aff0434de5b5c6dbb19"
     },
     {
       "path": "public/icons/icon-192.svg",
@@ -147,15 +159,19 @@
     },
     {
       "path": "scripts/verify-db.mjs",
-      "sha256": "dba34ef6d7c14517dccdb32c3bf436c75a21751e7183a9163a33765e05c32add"
+      "sha256": "e76e458f3c6329720e0ce793a0deb4ff793c36a8fb5932e98bdefc36a56663c3"
     },
     {
       "path": "supabase/INSTALL_ALL.sql",
-      "sha256": "a76d0f556ad0fdf58ed46af19767cdc754e7f1f898fbe1110deaa8a09ae0fff3"
+      "sha256": "d48cd1d8607e75755e3438f4aa43033af933f8fb34dc0108e3a580864e610edf"
     },
     {
       "path": "supabase/UPDATE_2_1.sql",
       "sha256": "ff5470c6e9fd1239e2f3d9dda309c13c7522da058e61e685aa88134093a91d21"
+    },
+    {
+      "path": "supabase/UPDATE_2_4.sql",
+      "sha256": "28ae9123ddd7a113a85f1592964d081a129733c4f3dad0a6ea38f5f79d6d4b60"
     },
     {
       "path": "tests/excel-json.test.mjs",
@@ -180,6 +196,10 @@
     {
       "path": "tests/static.test.mjs",
       "sha256": "3f205e8a1e20bee6d2190ebc163c583bbf5d340b0c253181da726a96be73f9a7"
+    },
+    {
+      "path": "tests/v24.test.mjs",
+      "sha256": "193d25ec01c8c0c8e23869cbd2987c5b3fcf39b20e9394b6f5a1430c338dea3a"
     }
   ]
 }
