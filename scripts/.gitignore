@@ -1,0 +1,8 @@
+.env
+.env.*
+!.env.example
+.netlify/
+node_modules/
+.DS_Store
+*.log
+backup-*.json

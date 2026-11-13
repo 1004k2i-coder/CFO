@@ -1,0 +1,221 @@
+{
+  "version": "2.5.0",
+  "previous_version": "2.4.0",
+  "package_type": "update",
+  "config_included": false,
+  "sql_required": true,
+  "files": [
+    {
+      "path": ".github/workflows/ci.yml",
+      "sha256": "20cd6853f91728e3ae964ac534d2b882cb1226b9aea4cd85eb9ccda8aa21a6de"
+    },
+    {
+      "path": ".gitignore",
+      "sha256": "6319d21cb4fb88257b5717b8cb4b36d0a56a6c407000bc39ecbf3350f6fd6169"
+    },
+    {
+      "path": "CHANGELOG.md",
+      "sha256": "df3edbcfdde5cd80029e350d7118546e75b6ec4e7b57b8fe47b9e71d3eee3f94"
+    },
+    {
+      "path": "HOTFIX_2_2_1.md",
+      "sha256": "e08180e6a86bb15e14b82f160f60eb75f0966d2313e250d9769f92361112d513"
+    },
+    {
+      "path": "README.md",
+      "sha256": "459a67482c80df6197e4770347e1f843162ff9db2220c12b58e99abfdbac580f"
+    },
+    {
+      "path": "RELEASE_HISTORY.json",
+      "sha256": "4e71d25ad3795441c0a499754b3d1101e7b4488a97ff1f5b73ccd139f19cc930"
+    },
+    {
+      "path": "UPDATE_GUIDE.md",
+      "sha256": "9c1a676c8a8377ca0d904486a7807a40449765023193902168717dec825b60f5"
+    },
+    {
+      "path": "docs/APPROVAL_V21.md",
+      "sha256": "ab1c643833f601b0db9d2dc9d969dbd72d67a637a04a9fe903392a5a2893d896"
+    },
+    {
+      "path": "docs/IMPORT_V22_TEST_RESULTS.md",
+      "sha256": "4f92ef2cf027456915b096c15441c0ae61f5ae17b32956cc270afd54e0f2d00f"
+    },
+    {
+      "path": "docs/TEST_RESULTS.md",
+      "sha256": "66dc9202b9a94f83d8c6c994605951b6c2dc5f1c5e5a33ee5f72a73952cf18f2"
+    },
+    {
+      "path": "docs/UPDATE_V22.md",
+      "sha256": "7965bc708db893f7198414b94b30fa59ef920a7cb800e92ec8c7ee8631d0fa3a"
+    },
+    {
+      "path": "netlify/functions/exchange-rates.mjs",
+      "sha256": "3d2e01179de0dc9ea2ac6e9ac6a9d8ff537dc89b0d1abd12c51fe257c2975d2a"
+    },
+    {
+      "path": "netlify.toml",
+      "sha256": "22fba86e9a6eb1ef4df6867a20da786277d5b4e8d108a812a9e2a8a349a7d439"
+    },
+    {
+      "path": "package-lock.json",
+      "sha256": "2ce14f4d2297585dc15b3daa4d2850b65daaf39cc4560da2d885376bf7a930ca"
+    },
+    {
+      "path": "package.json",
+      "sha256": "400b4a2fb909edc341217b28d1afe0f5a0dfff1c161cac82afd2d2934fbd2682"
+    },
+    {
+      "path": "public/assets/app.css",
+      "sha256": "538306243428f2624983035f6928bbe3d6b5b0fa251117e19f1f5102d3bcf4db"
+    },
+    {
+      "path": "public/assets/js/actuals.js",
+      "sha256": "4ec191d2dbed635885e6914210b6c17766f26f75805af6ddfa5e3893f964756b"
+    },
+    {
+      "path": "public/assets/js/api.js",
+      "sha256": "869517a8ccfe311a9ac376dc787c1fa8fc9c1d1c6ac942a939111e7aebb4991c"
+    },
+    {
+      "path": "public/assets/js/app.js",
+      "sha256": "e80ad85073c60375c0850e0d69d22a03677b0f066efb008544f0de2450a62b91"
+    },
+    {
+      "path": "public/assets/js/cfo-advice.js",
+      "sha256": "803fc4155fc94546d7a7a721b35b7f6887291a5a9a6bfca5571633632b98c599"
+    },
+    {
+      "path": "public/assets/js/cfo-panel.js",
+      "sha256": "f512311b111fe51aa903599c8d39a4e21fc4328ec1ddce6b4403194585158ad8"
+    },
+    {
+      "path": "public/assets/js/charts.js",
+      "sha256": "99a2db06ff1f6ec13fda5ca8bd95358e590a4895f2f769e289c52fdacf854a81"
+    },
+    {
+      "path": "public/assets/js/classification.js",
+      "sha256": "01a52cf9bec113b39e023996779bd15fc72b6abf50a57a4ca7f3e04da0eb6e31"
+    },
+    {
+      "path": "public/assets/js/demo-data.js",
+      "sha256": "1b26a166b235bd2d2961bebcf2c810daf897ebc0dc81ee4c654d380eb95cdeab"
+    },
+    {
+      "path": "public/assets/js/excel.js",
+      "sha256": "94b6fdbc4331522dc22baa72d8626b045e00d35e6c4f1912dc2730e1d6e851aa"
+    },
+    {
+      "path": "public/assets/js/finance.js",
+      "sha256": "2b2c5b6d52286208bbdc914fff7e5d76170c23d945ac1cf8856dacac50cc2d23"
+    },
+    {
+      "path": "public/assets/js/import-parsers.js",
+      "sha256": "0814c7ad74f8eb11de22d48655a6903b48e0a5ed7457c6cee4cd13d6da429317"
+    },
+    {
+      "path": "public/assets/js/maintenance.js",
+      "sha256": "4c092fe7fa2b0ddba3a97727a414d4a748224a7a8689803b640b2d608b01d8b8"
+    },
+    {
+      "path": "public/assets/js/monthly.js",
+      "sha256": "19016932b1494cfe153fa277c889af6fdffaa2688d280083d352c518940920ab"
+    },
+    {
+      "path": "public/assets/js/runtime.js",
+      "sha256": "31b1d2ed5344ca5a771f9e027efaf9bdbc3c78008163c47912e806fa07a524ff"
+    },
+    {
+      "path": "public/assets/js/transaction-panel.js",
+      "sha256": "c0625206ebcd330b109c9899620003aae09eed63adf8e0ee6418c5bc23cfc322"
+    },
+    {
+      "path": "public/assets/js/utils.js",
+      "sha256": "b2668e30d2021739e6f16eb3c6f6c0d1cffcab18c9bb47b2f31a18509cb5386a"
+    },
+    {
+      "path": "public/assets/js/version.js",
+      "sha256": "13c8d32b7eb845966b31cd1123a3e0735431914e90663f783b0fc39199b20a87"
+    },
+    {
+      "path": "public/icons/icon-192.svg",
+      "sha256": "50890904db319fd508ae29d1e6db48b61b1d739682b733094d75df0f81550121"
+    },
+    {
+      "path": "public/icons/icon-512.svg",
+      "sha256": "3355858dd348589acbc79bc8a878cacd09d9709eca360a806a37257b5b63c9d7"
+    },
+    {
+      "path": "public/index.html",
+      "sha256": "033ca2741708ccd9b037ec5eaabfbc10e4d414e72e0eb10211850a9687013dd6"
+    },
+    {
+      "path": "public/manifest.webmanifest",
+      "sha256": "913c724b422b1562dd0f842a4c625ed28c5c3f232863e824894f9d2411c42d7a"
+    },
+    {
+      "path": "public/service-worker.js",
+      "sha256": "cf2125c34c419ddc966f2c05ed554668be7382e21bf17e0c66b5343bde057ee3"
+    },
+    {
+      "path": "scripts/check.mjs",
+      "sha256": "84a316c71b987b3fc2da7611ecc831b8d7d86ac623c82c6f164c980aa30d3bc1"
+    },
+    {
+      "path": "scripts/release.mjs",
+      "sha256": "fd01b8733d3df710b67223b01cf092507bfaa020d87e82de4a310adcad4329bd"
+    },
+    {
+      "path": "scripts/verify-db.mjs",
+      "sha256": "1efd62bdedde5c4233b06b9d2587deeb2ae63b11ecce2c6806801d833b49a65a"
+    },
+    {
+      "path": "supabase/INSTALL_ALL.sql",
+      "sha256": "f3c82627807051e506422828e3041c2f486c5d0dc210d532ac1bf3f2105863ff"
+    },
+    {
+      "path": "supabase/UPDATE_2_1.sql",
+      "sha256": "ff5470c6e9fd1239e2f3d9dda309c13c7522da058e61e685aa88134093a91d21"
+    },
+    {
+      "path": "supabase/UPDATE_2_4.sql",
+      "sha256": "28ae9123ddd7a113a85f1592964d081a129733c4f3dad0a6ea38f5f79d6d4b60"
+    },
+    {
+      "path": "supabase/UPDATE_2_5.sql",
+      "sha256": "b8eb7eeffac95b2d9a484fd9a1e8f9744b4ae5de57fb5df50ac0e00a1408e98b"
+    },
+    {
+      "path": "tests/excel-json.test.mjs",
+      "sha256": "85552ad4ae31601eb3439bfcda257b26fea07613393ff4a0038460e972969202"
+    },
+    {
+      "path": "tests/finance.test.mjs",
+      "sha256": "c1bcdd202fea42b39123e842e492603bd9a89127faaaa8f848396fb89e881160"
+    },
+    {
+      "path": "tests/import.test.mjs",
+      "sha256": "b15100f862fb7cf58fdd3584d28e830f26590a0793afdaffbd097feee2c23139"
+    },
+    {
+      "path": "tests/monthly.test.mjs",
+      "sha256": "6702be86dcdd0051e4de8ae168e001e3387c933297b970b413e4e3eba2337e0c"
+    },
+    {
+      "path": "tests/security-config.test.mjs",
+      "sha256": "c18b0e8d09b8ddde4cd49804a42fff88b3ee33a87eb9b56dcd811cb301d908c2"
+    },
+    {
+      "path": "tests/static.test.mjs",
+      "sha256": "3f205e8a1e20bee6d2190ebc163c583bbf5d340b0c253181da726a96be73f9a7"
+    },
+    {
+      "path": "tests/v24.test.mjs",
+      "sha256": "193d25ec01c8c0c8e23869cbd2987c5b3fcf39b20e9394b6f5a1430c338dea3a"
+    },
+    {
+      "path": "tests/v25.test.mjs",
+      "sha256": "fb0fa8c92791a7173a4d3e9a05e70f92221a2b14556ad34f7a0f258ca274fda0"
+    }
+  ]
+}
