@@ -1,6 +1,6 @@
 {
-  "version": "2.5.0",
-  "previous_version": "2.4.0",
+  "version": "2.6.0",
+  "previous_version": "2.5.1",
   "package_type": "update",
   "config_included": false,
   "sql_required": true,
@@ -15,7 +15,7 @@
     },
     {
       "path": "CHANGELOG.md",
-      "sha256": "df3edbcfdde5cd80029e350d7118546e75b6ec4e7b57b8fe47b9e71d3eee3f94"
+      "sha256": "52151f7fc68a8e7a8cd37f16ff015d36eb8dcfb80aa370e56be93563f38fdb46"
     },
     {
       "path": "HOTFIX_2_2_1.md",
@@ -23,15 +23,15 @@
     },
     {
       "path": "README.md",
-      "sha256": "459a67482c80df6197e4770347e1f843162ff9db2220c12b58e99abfdbac580f"
+      "sha256": "9f4a0e001736e0bd73fe78fefec353d1a2221a93d532244ad3986bb35123ecd8"
     },
     {
       "path": "RELEASE_HISTORY.json",
-      "sha256": "4e71d25ad3795441c0a499754b3d1101e7b4488a97ff1f5b73ccd139f19cc930"
+      "sha256": "6a6bbd0492870e42e8c563075fe4adb24ac9cfe5a96a66ade2fabf52aa5b0200"
     },
     {
       "path": "UPDATE_GUIDE.md",
-      "sha256": "9c1a676c8a8377ca0d904486a7807a40449765023193902168717dec825b60f5"
+      "sha256": "9f4a0e001736e0bd73fe78fefec353d1a2221a93d532244ad3986bb35123ecd8"
     },
     {
       "path": "docs/APPROVAL_V21.md",
@@ -59,15 +59,19 @@
     },
     {
       "path": "package-lock.json",
-      "sha256": "2ce14f4d2297585dc15b3daa4d2850b65daaf39cc4560da2d885376bf7a930ca"
+      "sha256": "610f06e1652020f6b4a3c8e8e62d6cbc59b98fd20c4875da57abe655564c91a2"
     },
     {
       "path": "package.json",
-      "sha256": "400b4a2fb909edc341217b28d1afe0f5a0dfff1c161cac82afd2d2934fbd2682"
+      "sha256": "d91f7f7cef80afcd07dd191dcb52b03a47c2f3328c327b6515a8047881fbbd97"
     },
     {
       "path": "public/assets/app.css",
       "sha256": "538306243428f2624983035f6928bbe3d6b5b0fa251117e19f1f5102d3bcf4db"
+    },
+    {
+      "path": "public/assets/js/account-actions.js",
+      "sha256": "fe32db785f2e3b3b84fa7803e6ef6b6c52e3ebf439a2ec0d0f2f3168904da180"
     },
     {
       "path": "public/assets/js/actuals.js",
@@ -79,7 +83,7 @@
     },
     {
       "path": "public/assets/js/app.js",
-      "sha256": "e80ad85073c60375c0850e0d69d22a03677b0f066efb008544f0de2450a62b91"
+      "sha256": "1c413cfbe1d5dac5db4d7e7cb03a1439f3ab0d661ae2bd176dfb7afc7febe635"
     },
     {
       "path": "public/assets/js/cfo-advice.js",
@@ -127,7 +131,7 @@
     },
     {
       "path": "public/assets/js/transaction-panel.js",
-      "sha256": "c0625206ebcd330b109c9899620003aae09eed63adf8e0ee6418c5bc23cfc322"
+      "sha256": "c7216ad89ceef0bf37067a42a9d261bf5f87f710bd9d31811eb1346fabc4ba04"
     },
     {
       "path": "public/assets/js/utils.js",
@@ -135,7 +139,7 @@
     },
     {
       "path": "public/assets/js/version.js",
-      "sha256": "13c8d32b7eb845966b31cd1123a3e0735431914e90663f783b0fc39199b20a87"
+      "sha256": "9f3ecbf021f70ccfc12cdd58d199ee7c2c75c76348c124cbeef73d3c399867bd"
     },
     {
       "path": "public/icons/icon-192.svg",
@@ -170,8 +174,12 @@
       "sha256": "1efd62bdedde5c4233b06b9d2587deeb2ae63b11ecce2c6806801d833b49a65a"
     },
     {
+      "path": "supabase/APPLY_UPDATE.sql",
+      "sha256": "4c366cc0de642b1b263f64e13191f14c7aa2d21409471913b89141e49c92d8e6"
+    },
+    {
       "path": "supabase/INSTALL_ALL.sql",
-      "sha256": "f3c82627807051e506422828e3041c2f486c5d0dc210d532ac1bf3f2105863ff"
+      "sha256": "fa34fba101335ff2c20008e751b50370456b204deb96cd727808886e8786b9ed"
     },
     {
       "path": "supabase/UPDATE_2_1.sql",
@@ -184,6 +192,10 @@
     {
       "path": "supabase/UPDATE_2_5.sql",
       "sha256": "b8eb7eeffac95b2d9a484fd9a1e8f9744b4ae5de57fb5df50ac0e00a1408e98b"
+    },
+    {
+      "path": "supabase/UPDATE_2_6.sql",
+      "sha256": "20d5372872ae7d1439ab2329c1c5680621f6429eb6149b9ce10ef6d033cab340"
     },
     {
       "path": "tests/excel-json.test.mjs",

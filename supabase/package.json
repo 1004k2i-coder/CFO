@@ -1,6 +1,6 @@
 {
   "name": "changjin-finance-app",
-  "version": "2.5.0",
+  "version": "2.6.0",
   "private": true,
   "description": "창진에스씨 다중 사용자 재무관리·결재·경영 대시보드",
   "scripts": {
