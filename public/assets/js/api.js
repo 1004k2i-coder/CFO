@@ -73,8 +73,8 @@ export class FinanceAPI {
   }
 
   async listAccounts(companyId){
-    if(this.demo)return this.demoData.accounts.filter(a=>companyId==='all'||a.company_id===companyId);
-    let q=this.client.from('cash_accounts').select('*').order('bank_name');q=this._companyFilter(q,companyId);const {data,error}=await q;if(error)throw error;return data||[];
+    if(this.demo)return this.demoData.accounts.filter(a=>a.active!==false&&(companyId==='all'||a.company_id===companyId));
+    let q=this.client.from('cash_accounts').select('*').eq('active',true).order('bank_name');q=this._companyFilter(q,companyId);const {data,error}=await q;if(error)throw error;return data||[];
   }
   async saveAccount(row){
     if(this.demo){const r={...row,id:row.id||uid(),active:row.active!==false};const i=this.demoData.accounts.findIndex(x=>x.id===r.id);if(i>=0)this.demoData.accounts[i]=r;else this.demoData.accounts.push(r);demoSave(this.demoData);return r;}
@@ -118,7 +118,19 @@ export class FinanceAPI {
 
   async listSchedules(companyId,{fromDate,toDate,status}={}){
     if(this.demo){let rows=this.demoData.schedules.filter(x=>companyId==='all'||x.company_id===companyId);if(fromDate)rows=rows.filter(x=>x.due_date>=fromDate);if(toDate)rows=rows.filter(x=>x.due_date<=toDate);if(status)rows=rows.filter(x=>x.status===status);return rows.sort((a,b)=>a.due_date.localeCompare(b.due_date));}
-    let q=this.client.from('schedules').select('*,owner:profiles!schedules_owner_id_fkey(full_name),matched:bank_transactions!schedules_matched_transaction_id_fkey(id,counterparty,inflow,outflow,transaction_at)').order('due_date');q=this._companyFilter(q,companyId);if(fromDate)q=q.gte('due_date',fromDate);if(toDate)q=q.lte('due_date',toDate);if(status)q=q.eq('status',status);const {data,error}=await q;if(error)throw error;return data||[];
+    const rows=[];
+    for(let offset=0;;){
+      let q=this.client.from('schedules').select('*,owner:profiles!schedules_owner_id_fkey(full_name),matched:bank_transactions!schedules_matched_transaction_id_fkey(id,counterparty,inflow,outflow,transaction_at)').order('due_date').order('id').range(offset,offset+499);
+      q=this._companyFilter(q,companyId);
+      if(fromDate)q=q.gte('due_date',fromDate);
+      if(toDate)q=q.lte('due_date',toDate);
+      if(status)q=q.eq('status',status);
+      const {data,error}=await q;
+      if(error)throw error;
+      if(!data?.length)break;
+      rows.push(...data);offset+=data.length;
+    }
+    return rows;
   }
   async countOverdue(companyId){const today=isoDate();if(this.demo)return this.demoData.schedules.filter(x=>(companyId==='all'||x.company_id===companyId)&&x.due_date<today&&!['matched','completed','cancelled'].includes(x.status)).length;let q=this.client.from('schedules').select('*',{count:'exact',head:true}).lt('due_date',today).not('status','in','("matched","completed","cancelled")');q=this._companyFilter(q,companyId);const {count,error}=await q;if(error)throw error;return count||0;}
   async saveSchedule(row){

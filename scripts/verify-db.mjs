@@ -151,5 +151,24 @@ const backup24=(await q('select export_finance_backup() as b'))[0].b;assert.ok(b
 await login(staff,other);await fails(()=>q('delete from internal_transfers'),'내부이체 직접 삭제 차단');await login(admin,'z'.repeat(64));await fails(()=>q('select delete_schedules_batch($1)',[[s3]]),'미승인 기기 일괄삭제 차단');
 console.log('일괄 확인·분류 변경·선택 삭제·환율·신규 연결 백업복원·권한 검증 통과');
 
+{
+ await db.exec('reset role');
+ await db.exec(fs.readFileSync(new URL('../supabase/UPDATE_2_5.sql',import.meta.url),'utf8'));
+ await login(admin,token);
+ const saved=(await q('select export_finance_backup() b'))[0].b;
+ const checkpoint=(await q("select create_checkpoint('시점 복원 검증') id"))[0].id;
+ const a=(await q('select * from cash_accounts limit 1'))[0];
+ const count=(await q('select count(*)::int n from cash_accounts'))[0].n;
+ await q('update cash_accounts set active=false,current_balance=current_balance+1 where id=$1',[a.id]);
+ await q("insert into cash_accounts(company_id,bank_name,account_name) values($1,'검증은행','백업 이후 추가 계좌')",[a.company_id]);
+ await q('select restore_checkpoint($1)',[checkpoint]);
+ assert.equal((await q('select count(*)::int n from cash_accounts'))[0].n,count);
+ assert.equal((await q('select current_balance from cash_accounts where id=$1',[a.id]))[0].current_balance,a.current_balance);
+ const broken=JSON.parse(JSON.stringify(saved));
+ broken.data.cash_accounts[0].company_id='99999999-9999-4999-8999-999999999999';
+ await fails(()=>q('select restore_finance_backup($1)',[broken]),'복원 도중 참조 오류 시 전체 롤백');
+ assert.equal((await q('select count(*)::int n from cash_accounts'))[0].n,count);
+ console.log('2.5 작업백업·추가 계좌 제거·잔액 복원·실패 롤백 검증 통과');
+}
 await db.close();
 console.log('데이터베이스 검증 완료');
