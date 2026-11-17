@@ -1,3 +1,4 @@
+import { importExtension } from './import-filename.js';
 import {effectiveMonthlyPlans} from './monthly.js';
 import { buildDemoData } from './demo-data.js';
 import { callFunction } from './runtime.js';
@@ -112,7 +113,7 @@ export class FinanceAPI {
   async updateImportBatch(id,patch){if(this.demo)return;const {error}=await this.client.from('import_batches').update(patch).eq('id',id);if(error)throw error;}
   async uploadOriginalFile(companyId,file){
     if(this.demo)return `demo/${file.name}`;
-    const {data:{user}}=await this.client.auth.getUser();const extension=String(file.name||'').match(/\.(xlsx|xls|csv|json)$/i)?.[1].toLowerCase()||'bin';const path=`${companyId}/${user.id}/${Date.now()}_${uid()}.${extension}`;
+    const {data:{user}}=await this.client.auth.getUser();const extension=importExtension(file.name)||'bin';const path=`${companyId}/${user.id}/${Date.now()}_${uid()}.${extension}`;
     const {error}=await this.client.storage.from('finance-files').upload(path,file,{upsert:false,contentType:file.type||'application/octet-stream'});if(error)throw error;return path;
   }
 
