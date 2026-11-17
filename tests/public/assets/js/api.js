@@ -1,3 +1,4 @@
+import { importExtension } from './import-filename.js';
 import {effectiveMonthlyPlans} from './monthly.js';
 import { buildDemoData } from './demo-data.js';
 import { callFunction } from './runtime.js';
@@ -112,7 +113,7 @@ export class FinanceAPI {
   async updateImportBatch(id,patch){if(this.demo)return;const {error}=await this.client.from('import_batches').update(patch).eq('id',id);if(error)throw error;}
   async uploadOriginalFile(companyId,file){
     if(this.demo)return `demo/${file.name}`;
-    const {data:{user}}=await this.client.auth.getUser();const extension=String(file.name||'').match(/\.(xlsx|xls|csv|json)$/i)?.[1].toLowerCase()||'bin';const path=`${companyId}/${user.id}/${Date.now()}_${uid()}.${extension}`;
+    const {data:{user}}=await this.client.auth.getUser();const extension=importExtension(file.name)||'bin';const path=`${companyId}/${user.id}/${Date.now()}_${uid()}.${extension}`;
     const {error}=await this.client.storage.from('finance-files').upload(path,file,{upsert:false,contentType:file.type||'application/octet-stream'});if(error)throw error;return path;
   }
 
@@ -157,10 +158,10 @@ export class FinanceAPI {
 
   async listProducts(companyId){
     if(this.demo)return this.demoData.products.filter(x=>companyId==='all'||x.company_id===companyId);
-    let q=this.client.from('financial_products').select('*').eq('active',true).order('maturity_date');q=this._companyFilter(q,companyId);const {data,error}=await q;if(error)throw error;const {data:adjustments,error:adjustmentError}=await this.client.rpc('product_transfer_totals');if(adjustmentError)throw new Error('내부이체 업데이트 SQL을 먼저 실행하세요: '+adjustmentError.message);const totals=new Map((adjustments||[]).map(x=>[x.product_id,Number(x.adjustment)]));return (data||[]).map(x=>({...x,base_current_value:Number(x.current_value),transfer_adjustment:totals.get(x.id)||0,current_value:Number(x.current_value)+(totals.get(x.id)||0)}));
+    let q=this.client.from('financial_products').select('*').eq('active',true).order('maturity_date');q=this._companyFilter(q,companyId);const {data,error}=await q;if(error)throw error;const {data:adjustments,error:adjustmentError}=await this.client.rpc('product_transfer_totals');if(adjustmentError)throw new Error('내부이체 업데이트 SQL을 먼저 실행하세요: '+adjustmentError.message);const totals=new Map((adjustments||[]).map(x=>[x.product_id,Number(x.adjustment)]));return (data||[]).map(x=>({...x,base_current_value:Number(x.current_value),transfer_adjustment:x.manual_balance?0:(totals.get(x.id)||0),current_value:Number(x.current_value)+(x.manual_balance?0:(totals.get(x.id)||0))}));
   }
   async saveProduct(row){
-    const fields=['id','company_id','product_type','bank_name','product_name','currency','principal','current_value','exchange_rate','interest_rate','start_date','maturity_date','available_date','redeemable','pledged','conditions','memo','active','balance_as_of','exchange_rate_at','exchange_rate_fetched_at'];
+    const fields=['id','company_id','product_type','bank_name','product_name','currency','principal','current_value','exchange_rate','interest_rate','start_date','maturity_date','available_date','redeemable','pledged','conditions','memo','active','balance_as_of','exchange_rate_at','exchange_rate_fetched_at','manual_balance'];
     const payload=Object.fromEntries(fields.filter(k=>Object.hasOwn(row,k)).map(k=>[k,row[k]]));
     if(Object.hasOwn(row,'base_current_value'))payload.current_value=row.base_current_value;
     for(const key of ['start_date','maturity_date','available_date','balance_as_of'])if(payload[key]==='')payload[key]=null;

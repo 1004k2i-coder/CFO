@@ -1,3 +1,4 @@
+import {chairmanBrief} from './chairman-brief.js';
 import {isoDate,addDays,toNumber,esc,money} from './utils.js';
 import {productKrwValue} from './finance.js';
 
@@ -29,6 +30,8 @@ export function buildCfoAdvice(data,companyId='all',today=isoDate()){
     if(offset%7===6||offset===90)weeks.push({date:day,balance:running});
   }
   const issues=[];
+  const staleProducts=products.filter(p=>p.product_type!=='loan'&&(!p.balance_as_of||p.balance_as_of.slice(0,10)<addDays(today,-7))).length;
+  if(staleProducts)issues.push('예금·MMT 잔액 확인일이 오래되었거나 없는 상품 '+staleProducts+'개의 실제 잔액을 확인하세요.');
   if(!upcoming.some(s=>s.direction==='payment'))issues.push('향후 13주 지급계획이 없습니다. 급여·매입대금·세금·대출 상환일정을 입력하세요.');
   if(!upcoming.some(s=>s.direction==='receipt'))issues.push('향후 13주 입금계획이 없습니다. 회수 예정일과 입금확률을 확인하세요.');
   if(stale)issues.push('잔액 기준일이 7일 초과 또는 미등록인 계좌 '+stale+'개를 대조하세요.');
@@ -43,5 +46,5 @@ export function buildCfoAdvice(data,companyId='all',today=isoDate()){
   return {cash,reserve,receipts,payments,min,firstShortage,shortage,stressEnding,loanMaturity,issues,recommendation,weeks,loans:loans.reduce((n,p)=>n+productKrwValue(p),0),overdue:schedules.filter(s=>s.due_date<today).length};
 }
 export function cfoAdviceHtml(advice){
-  return `<section class="panel"><h2>CFO 자금 점검·의사결정 참고</h2><p>${esc(advice.recommendation)}</p><ul>${advice.issues.map(x=>`<li>${esc(x)}</li>`).join('')}</ul><table><tbody><tr><th>13주 최저 은행잔액</th><td>${money(advice.min)}</td><th>필수현금 미달 최초일</th><td>${advice.firstShortage||'입력된 일정에서 없음'}</td></tr><tr><th>기준 대비 최대 부족액</th><td>${money(advice.shortage)}</td><th>입금액 20% 감소 시 기말잔액</th><td>${money(advice.stressEnding)}</td></tr><tr><th>등록 대출잔액</th><td>${money(advice.loans)}</td><th>13주 내 만기 대출잔액</th><td>${money(advice.loanMaturity)}</td></tr><tr><th>기한 경과 미완료 일정</th><td>${advice.overdue}건</td><th>판단 자료</th><td>${advice.issues.length?'보완 필요':'입력 계획 기준'}</td></tr></tbody></table><p>예금·투자상품의 환매대금은 입금 예정으로 등록한 경우에 반영합니다. 만기 대출잔액은 별도 점검값이며, 지급 예정과의 중복을 피하기 위해 전망에서 자동 차감하지 않습니다. 대출 상환은 지급 예정에 등록하세요. 입금 20% 감소는 비교용 가정입니다.</p><table><thead><tr><th>주간 기준일</th><th>예상 은행잔액</th></tr></thead><tbody>${advice.weeks.map(w=>`<tr><td>${w.date}</td><td>${money(w.balance)}</td></tr>`).join('')}</tbody></table><p class="small muted">현금흐름 예측 참고 · <a href="https://www.bdc.ca/en/articles-tools/money-finance/manage-finances/making-projection-coming-year" target="_blank" rel="noopener">BDC 자금계획 안내</a></p></section>`;
+  return chairmanBrief(advice)+`<section class="panel"><h2>CFO 자금 점검·의사결정 참고</h2><p>${esc(advice.recommendation)}</p><ul>${advice.issues.map(x=>`<li>${esc(x)}</li>`).join('')}</ul><table><tbody><tr><th>13주 최저 은행잔액</th><td>${money(advice.min)}</td><th>필수현금 미달 최초일</th><td>${advice.firstShortage||'입력된 일정에서 없음'}</td></tr><tr><th>기준 대비 최대 부족액</th><td>${money(advice.shortage)}</td><th>입금액 20% 감소 시 기말잔액</th><td>${money(advice.stressEnding)}</td></tr><tr><th>등록 대출잔액</th><td>${money(advice.loans)}</td><th>13주 내 만기 대출잔액</th><td>${money(advice.loanMaturity)}</td></tr><tr><th>기한 경과 미완료 일정</th><td>${advice.overdue}건</td><th>판단 자료</th><td>${advice.issues.length?'보완 필요':'입력 계획 기준'}</td></tr></tbody></table><p>예금·투자상품의 환매대금은 입금 예정으로 등록한 경우에 반영합니다. 만기 대출잔액은 별도 점검값이며, 지급 예정과의 중복을 피하기 위해 전망에서 자동 차감하지 않습니다. 대출 상환은 지급 예정에 등록하세요. 입금 20% 감소는 비교용 가정입니다.</p><table><thead><tr><th>주간 기준일</th><th>예상 은행잔액</th></tr></thead><tbody>${advice.weeks.map(w=>`<tr><td>${w.date}</td><td>${money(w.balance)}</td></tr>`).join('')}</tbody></table><p class="small muted">현금흐름 예측 참고 · <a href="https://www.bdc.ca/en/articles-tools/money-finance/manage-finances/making-projection-coming-year" target="_blank" rel="noopener">BDC 자금계획 안내</a></p></section>`;
 }

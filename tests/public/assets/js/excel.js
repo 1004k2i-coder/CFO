@@ -1,3 +1,4 @@
+import { importExtension } from './import-filename.js';
 import { clean, isoDate, loadScript, sha256, toNumber } from './utils.js';
 import { findBankHeader, findPlanTitle, parseBankSheet, parsePlanSheet } from './import-parsers.js';
 
@@ -32,8 +33,9 @@ function excelDate(value){
 async function ensureXlsx(){if(!window.XLSX)await loadScript('https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js','XLSX');return window.XLSX}
 
 export async function parseFinanceFile(file, {categories=[]}={}) {
-  const lower=String(file.name||'').toLowerCase();
-  if(lower.endsWith('.json')){
+  const extension=importExtension(file.name);
+  if(!extension)throw new Error('엑셀(.xlsx, .xls), CSV 또는 JSON 파일을 선택하세요. 파일명 끝의 (2), (3)도 지원합니다.');
+  if(extension==='json'){
     const text=await file.text(); let parsed;
     try{parsed=JSON.parse(text)}catch{throw new Error('JSON 백업 파일을 읽을 수 없습니다.');}
     if(parsed?.corpNames&&parsed?.corps)return {kind:'legacy',fileHash:await sha256(text),...parseLegacyJson(parsed)};

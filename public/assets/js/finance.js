@@ -18,6 +18,8 @@ export function calculateDashboard({companies=[],accounts=[],schedules=[],produc
   const upcoming=selectedSchedules.filter(s=>s.due_date>=today&&s.due_date<=in30);
   const overdue=selectedSchedules.filter(s=>s.due_date<today&&!['matched','completed','cancelled'].includes(s.status));
   const currentCash=selectedAccounts.reduce((sum,a)=>sum+toNumber(a.current_balance),0);
+  const depositBalance=selectedProducts.filter(p=>p.product_type!=='loan').reduce((sum,p)=>sum+productKrwValue(p),0);
+  const cashIncludingDeposits=currentCash+depositBalance;
   const requiredReserve=selectedAccounts.reduce((sum,a)=>sum+toNumber(a.required_reserve),0);
   const receipts=upcoming.filter(s=>s.direction==='receipt').reduce((sum,s)=>sum+toNumber(s.amount)*toNumber(s.probability??100)/100,0);
   const payments=upcoming.filter(s=>s.direction==='payment').reduce((sum,s)=>sum+toNumber(s.amount),0);
@@ -60,7 +62,7 @@ export function calculateDashboard({companies=[],accounts=[],schedules=[],produc
     const expense=rows.reduce((s,r)=>s+toNumber(r.salary)+toNumber(r.trade_payables)+toNumber(r.interest_expense)+toNumber(r.other_expense),0);
     return {month:`${i+1}월`,income,expense,net:income-expense};
   });
-  return {currentCash,requiredReserve,receipts,payments,transfers,immediateLiquidity,loans,projected,shortage,investable,pendingApprovals,overdueCount:overdue.length,minBalance,minDate,requiredCash,timeline,entityRows,monthly};
+  return {currentCash,depositBalance,cashIncludingDeposits,requiredReserve,receipts,payments,transfers,immediateLiquidity,loans,projected,shortage,investable,pendingApprovals,overdueCount:overdue.length,minBalance,minDate,requiredCash,timeline,entityRows,monthly};
 }
 
 export function buildReportSnapshot(data, companyId='all') {
@@ -70,7 +72,7 @@ export function buildReportSnapshot(data, companyId='all') {
     cfo_advice:buildCfoAdvice(data,companyId),
     company_id:companyId,
     kpis:{
-      current_cash:d.currentCash,required_reserve:d.requiredReserve,receipts_30d:d.receipts,payments_30d:d.payments,
+      current_cash:d.currentCash,deposit_balance:d.depositBalance,cash_including_deposits:d.cashIncludingDeposits,required_reserve:d.requiredReserve,receipts_30d:d.receipts,payments_30d:d.payments,
       projected_balance:d.projected,min_balance:d.minBalance,required_cash:d.requiredCash,immediate_liquidity:d.immediateLiquidity,
       investable:d.investable,loan_balance:d.loans,overdue_count:d.overdueCount
     },

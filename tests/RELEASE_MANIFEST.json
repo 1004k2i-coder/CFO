@@ -1,9 +1,9 @@
 {
-  "version": "2.5.0",
-  "previous_version": "2.4.0",
+  "version": "2.7.3",
+  "previous_version": "2.7.2",
   "package_type": "update",
   "config_included": false,
-  "sql_required": true,
+  "sql_required": false,
   "files": [
     {
       "path": ".github/workflows/ci.yml",
@@ -15,7 +15,7 @@
     },
     {
       "path": "CHANGELOG.md",
-      "sha256": "df3edbcfdde5cd80029e350d7118546e75b6ec4e7b57b8fe47b9e71d3eee3f94"
+      "sha256": "02b6131da59077f2433d4dc87aa78eb30766805fe1ec82ff4a6783530989a7e9"
     },
     {
       "path": "HOTFIX_2_2_1.md",
@@ -23,15 +23,15 @@
     },
     {
       "path": "README.md",
-      "sha256": "459a67482c80df6197e4770347e1f843162ff9db2220c12b58e99abfdbac580f"
+      "sha256": "a91e26618ba42fd44bd00938db839fa35ca8096915c2e6917d83d4789065c38e"
     },
     {
       "path": "RELEASE_HISTORY.json",
-      "sha256": "4e71d25ad3795441c0a499754b3d1101e7b4488a97ff1f5b73ccd139f19cc930"
+      "sha256": "d7ad668ce1b9e6f4a01b4d1b1a130166d41249339b527aea3988b7344665c845"
     },
     {
       "path": "UPDATE_GUIDE.md",
-      "sha256": "9c1a676c8a8377ca0d904486a7807a40449765023193902168717dec825b60f5"
+      "sha256": "6a59f7d2105110838e38394b13346fa59c4b1a778895422a1675cee261ed287c"
     },
     {
       "path": "docs/APPROVAL_V21.md",
@@ -44,6 +44,10 @@
     {
       "path": "docs/TEST_RESULTS.md",
       "sha256": "66dc9202b9a94f83d8c6c994605951b6c2dc5f1c5e5a33ee5f72a73952cf18f2"
+    },
+    {
+      "path": "docs/TEST_V271.md",
+      "sha256": "e68fe324178d3721c77b67bc6fe661fb0aa79cb1e06cf9d6fcf74bf6d9af2a80"
     },
     {
       "path": "docs/UPDATE_V22.md",
@@ -59,15 +63,19 @@
     },
     {
       "path": "package-lock.json",
-      "sha256": "2ce14f4d2297585dc15b3daa4d2850b65daaf39cc4560da2d885376bf7a930ca"
+      "sha256": "11a7811bd8ccbbe8ffdee0168d497b63a1fe61d9cdd215e72ff4f2b5139c169b"
     },
     {
       "path": "package.json",
-      "sha256": "400b4a2fb909edc341217b28d1afe0f5a0dfff1c161cac82afd2d2934fbd2682"
+      "sha256": "6b472378609091defb6bb709c9e1fdd2137b0f09fb5d37a0571c0990a438ad95"
     },
     {
       "path": "public/assets/app.css",
       "sha256": "538306243428f2624983035f6928bbe3d6b5b0fa251117e19f1f5102d3bcf4db"
+    },
+    {
+      "path": "public/assets/js/account-actions.js",
+      "sha256": "fe32db785f2e3b3b84fa7803e6ef6b6c52e3ebf439a2ec0d0f2f3168904da180"
     },
     {
       "path": "public/assets/js/actuals.js",
@@ -75,19 +83,23 @@
     },
     {
       "path": "public/assets/js/api.js",
-      "sha256": "869517a8ccfe311a9ac376dc787c1fa8fc9c1d1c6ac942a939111e7aebb4991c"
+      "sha256": "b6882de9d67b6e97b3757157ef54291040fe6c5739f68ab78d9c71fbed5032aa"
     },
     {
       "path": "public/assets/js/app.js",
-      "sha256": "e80ad85073c60375c0850e0d69d22a03677b0f066efb008544f0de2450a62b91"
+      "sha256": "4986533a3efffbd3f09c91d29a29e58d3347b8c776ea316b3d0604308a847bd5"
     },
     {
       "path": "public/assets/js/cfo-advice.js",
-      "sha256": "803fc4155fc94546d7a7a721b35b7f6887291a5a9a6bfca5571633632b98c599"
+      "sha256": "edd9fb416fa576ab2b807b1b490fbbd19944ee7feab4d82881de2ee236c0e857"
     },
     {
       "path": "public/assets/js/cfo-panel.js",
       "sha256": "f512311b111fe51aa903599c8d39a4e21fc4328ec1ddce6b4403194585158ad8"
+    },
+    {
+      "path": "public/assets/js/chairman-brief.js",
+      "sha256": "26f0f465ee7b614d954225d490cbda9befdfdd368bc581266d3b270dd3c5e63b"
     },
     {
       "path": "public/assets/js/charts.js",
@@ -103,11 +115,15 @@
     },
     {
       "path": "public/assets/js/excel.js",
-      "sha256": "94b6fdbc4331522dc22baa72d8626b045e00d35e6c4f1912dc2730e1d6e851aa"
+      "sha256": "8ac48a451b7351f626eeeb98c6f1034f4b257bc3bbf7647f03d11d6851a9e494"
     },
     {
       "path": "public/assets/js/finance.js",
-      "sha256": "2b2c5b6d52286208bbdc914fff7e5d76170c23d945ac1cf8856dacac50cc2d23"
+      "sha256": "dd7b4bcceec81643a39ca3dd29cc4b4a26160a9e68037934cd7a4a437fc71a3b"
+    },
+    {
+      "path": "public/assets/js/import-filename.js",
+      "sha256": "a4b4e23cb7192db2ee37e634ceac1e01b454b9ef0a6f67e8f05f2abb90f9c616"
     },
     {
       "path": "public/assets/js/import-parsers.js",
@@ -116,6 +132,10 @@
     {
       "path": "public/assets/js/maintenance.js",
       "sha256": "4c092fe7fa2b0ddba3a97727a414d4a748224a7a8689803b640b2d608b01d8b8"
+    },
+    {
+      "path": "public/assets/js/manual-balance.js",
+      "sha256": "ed07c2ecc1114bc9ea5c40dbaaaf5935ae400ff2a2c7d1344483e766a81c1c79"
     },
     {
       "path": "public/assets/js/monthly.js",
@@ -127,7 +147,7 @@
     },
     {
       "path": "public/assets/js/transaction-panel.js",
-      "sha256": "c0625206ebcd330b109c9899620003aae09eed63adf8e0ee6418c5bc23cfc322"
+      "sha256": "c7216ad89ceef0bf37067a42a9d261bf5f87f710bd9d31811eb1346fabc4ba04"
     },
     {
       "path": "public/assets/js/utils.js",
@@ -135,7 +155,7 @@
     },
     {
       "path": "public/assets/js/version.js",
-      "sha256": "13c8d32b7eb845966b31cd1123a3e0735431914e90663f783b0fc39199b20a87"
+      "sha256": "39ad2ab99449749ddaf1d54de955cfe0827ec248391b1b3ad44ee02a76b40d50"
     },
     {
       "path": "public/icons/icon-192.svg",
@@ -170,8 +190,12 @@
       "sha256": "1efd62bdedde5c4233b06b9d2587deeb2ae63b11ecce2c6806801d833b49a65a"
     },
     {
+      "path": "supabase/APPLY_UPDATE.sql",
+      "sha256": "f350f4402e1db411dbe721decee7aea5cfb5a32997a1e468362aa354c92a5071"
+    },
+    {
       "path": "supabase/INSTALL_ALL.sql",
-      "sha256": "f3c82627807051e506422828e3041c2f486c5d0dc210d532ac1bf3f2105863ff"
+      "sha256": "a512a1772d736fa570fae0ddcd560c8cace2a48d01dd0670b40629e87e869486"
     },
     {
       "path": "supabase/UPDATE_2_1.sql",
@@ -184,6 +208,14 @@
     {
       "path": "supabase/UPDATE_2_5.sql",
       "sha256": "b8eb7eeffac95b2d9a484fd9a1e8f9744b4ae5de57fb5df50ac0e00a1408e98b"
+    },
+    {
+      "path": "supabase/UPDATE_2_6.sql",
+      "sha256": "20d5372872ae7d1439ab2329c1c5680621f6429eb6149b9ce10ef6d033cab340"
+    },
+    {
+      "path": "supabase/UPDATE_2_7.sql",
+      "sha256": "3fc8762b026e5fd8efa5d1be69334ba22ee6fe2d19b594b8d394881d7c65566d"
     },
     {
       "path": "tests/excel-json.test.mjs",
@@ -216,6 +248,18 @@
     {
       "path": "tests/v25.test.mjs",
       "sha256": "fb0fa8c92791a7173a4d3e9a05e70f92221a2b14556ad34f7a0f258ca274fda0"
+    },
+    {
+      "path": "tests/v27.test.mjs",
+      "sha256": "09c72b8346058272c04f65cdd5d917f6d2e7ce295c0ca3a37e9a736c26c93293"
+    },
+    {
+      "path": "tests/v271.test.mjs",
+      "sha256": "37cf401eb7479dd2ba4c4912acee5e49a575c598c7924f80dda99ed83bf9063d"
+    },
+    {
+      "path": "tests/v272.test.mjs",
+      "sha256": "b6d0e8d267f79a967b8ebe480e0408c2f74cd138bc85163723723cf95d0b1e0e"
     }
   ]
 }
