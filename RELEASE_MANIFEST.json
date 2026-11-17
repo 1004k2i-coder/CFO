@@ -1,6 +1,6 @@
 {
-  "version": "2.7.3",
-  "previous_version": "2.7.2",
+  "version": "2.7.4",
+  "previous_version": "2.7.3",
   "package_type": "update",
   "config_included": false,
   "sql_required": false,
@@ -27,11 +27,11 @@
     },
     {
       "path": "RELEASE_HISTORY.json",
-      "sha256": "d7ad668ce1b9e6f4a01b4d1b1a130166d41249339b527aea3988b7344665c845"
+      "sha256": "916471579813c2d88dad00d709f13b12ccc4cf23e5ac9c8f99da81fe892e8246"
     },
     {
       "path": "UPDATE_GUIDE.md",
-      "sha256": "6a59f7d2105110838e38394b13346fa59c4b1a778895422a1675cee261ed287c"
+      "sha256": "e7e81f56f1b7f4634ef9998fefb279db69dbdd45d3afdaf1cc6a7f15a0dc05e2"
     },
     {
       "path": "docs/APPROVAL_V21.md",
@@ -63,11 +63,11 @@
     },
     {
       "path": "package-lock.json",
-      "sha256": "11a7811bd8ccbbe8ffdee0168d497b63a1fe61d9cdd215e72ff4f2b5139c169b"
+      "sha256": "086a9c18ebf556e878d457cbf1ef4c8618df060c7f1feaa8328dd1888fefc5c2"
     },
     {
       "path": "package.json",
-      "sha256": "6b472378609091defb6bb709c9e1fdd2137b0f09fb5d37a0571c0990a438ad95"
+      "sha256": "d2cc68d3190d25a0203bd261a4da0780760218538f66e5df5d905f87e7273c9d"
     },
     {
       "path": "public/assets/app.css",
@@ -87,7 +87,7 @@
     },
     {
       "path": "public/assets/js/app.js",
-      "sha256": "4986533a3efffbd3f09c91d29a29e58d3347b8c776ea316b3d0604308a847bd5"
+      "sha256": "5ea0e1d8a4a1cf235e551247de577289dbc836487f4c872af5fb84d7627184a4"
     },
     {
       "path": "public/assets/js/cfo-advice.js",
@@ -155,7 +155,7 @@
     },
     {
       "path": "public/assets/js/version.js",
-      "sha256": "39ad2ab99449749ddaf1d54de955cfe0827ec248391b1b3ad44ee02a76b40d50"
+      "sha256": "b207744950dbe828928641ded96cc8165e26df800c1f6651cff4ba341d2212fd"
     },
     {
       "path": "public/icons/icon-192.svg",

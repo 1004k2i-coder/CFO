@@ -1,5 +1,13 @@
 [
   {
+    "version": "2.7.4",
+    "date": "2026-11-17",
+    "sql_required": false,
+    "changes": [
+      "계좌 현황 표 하단에 표시 계좌의 현재잔고 합계 추가"
+    ]
+  },
+  {
     "version": "2.7.3",
     "date": "2026-11-17",
     "sql_required": false,
